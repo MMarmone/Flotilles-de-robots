@@ -186,6 +186,7 @@ void initValue() {
 
 /*
  * Determines where to move
+ * detection d'un objet, on l'approche, on s'aligne (//) avec et on avance?
  */
 int explore(float cm_LEFT, float cm_left, float cm_front_left, float cm_front_right, float cm_right, float cm_RIGHT) {  
   
