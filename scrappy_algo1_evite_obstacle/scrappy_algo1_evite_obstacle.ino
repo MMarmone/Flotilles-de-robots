@@ -50,21 +50,20 @@
 #define RIGHT_ 1
 
 
-/* Ultrasonic sensors */     
+/* Ultrasonic sensors */      
+const uint8_t echoPin_RIGHT = 12;  // echo signal (receives)
+const uint8_t echoPin_right = 10;
+const uint8_t echoPin_front_right = 8; 
+const uint8_t echoPin_front_left = 6; 
+const uint8_t echoPin_left = 4;
+const uint8_t echoPin_LEFT = 2; 
 
-const uint8_t echoPin_RIGHT = 2;  // echo signal (receives)
-const uint8_t echoPin_right = 4;
-const uint8_t echoPin_front_right = 6;
-const uint8_t echoPin_front_left = 8; 
-const uint8_t echoPin_left = 10;
-const uint8_t echoPin_LEFT = 12; 
-
-const uint8_t trigPin_RIGHT = 3;  // trigger signal (sends)
-const uint8_t trigPin_right = 5;
-const uint8_t trigPin_front_right = 7;
-const uint8_t trigPin_front_left = 9; 
-const uint8_t trigPin_left = 11;
-const uint8_t trigPin_LEFT = 13;
+const uint8_t trigPin_RIGHT = 13;  // trigger signal (sends)
+const uint8_t trigPin_right = 11;
+const uint8_t trigPin_front_right = 9;
+const uint8_t trigPin_front_left = 7; 
+const uint8_t trigPin_left = 5;
+const uint8_t trigPin_LEFT = 3;
 
 
 
@@ -231,7 +230,7 @@ float calculDistance(uint8_t trigPin, uint8_t echoPin) {
  */
 int explore(float cm_front_left, float cm_front_right, float cm_left, float cm_right, float cm_LEFT, float cm_RIGHT) {
 
-  /* Print distance of each sensor - for debugging
+  //Print distance of each sensor - for debugging
   Serial.print(cm_LEFT);
   Serial.print(" - ");
   Serial.print(cm_left);
@@ -243,7 +242,7 @@ int explore(float cm_front_left, float cm_front_right, float cm_left, float cm_r
   Serial.println(cm_right);
   Serial.print(" - ");
   Serial.println(cm_RIGHT);
-  */
+  
 
    // if there is enough space everywhere in front of him then go forward
    if ((cm_front_right > robotWidth + safetyDistance) && (cm_front_left > robotWidth + safetyDistance) && cm_left > safetyDistance && cm_right > safetyDistance) {    
