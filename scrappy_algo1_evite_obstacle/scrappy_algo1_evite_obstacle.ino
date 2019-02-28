@@ -53,17 +53,17 @@
 /* Ultrasonic sensors */     
 
 const uint8_t echoPin_RIGHT = 2;  // echo signal (receives)
-const uint8_t echoPin_right = 3;
-const uint8_t echoPin_front_right = 4;
-const uint8_t echoPin_front_left = 5; 
-const uint8_t echoPin_left = 6;
-const uint8_t echoPin_LEFT = 7; 
+const uint8_t echoPin_right = 4;
+const uint8_t echoPin_front_right = 6;
+const uint8_t echoPin_front_left = 8; 
+const uint8_t echoPin_left = 10;
+const uint8_t echoPin_LEFT = 12; 
 
-const uint8_t trigPin_RIGHT = 8;  // trigger signal (sends)
-const uint8_t trigPin_right = 9;
-const uint8_t trigPin_front_right = 10;
-const uint8_t trigPin_front_left = 11; 
-const uint8_t trigPin_left = 12;
+const uint8_t trigPin_RIGHT = 3;  // trigger signal (sends)
+const uint8_t trigPin_right = 5;
+const uint8_t trigPin_front_right = 7;
+const uint8_t trigPin_front_left = 9; 
+const uint8_t trigPin_left = 11;
 const uint8_t trigPin_LEFT = 13;
 
 
