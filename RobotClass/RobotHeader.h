@@ -10,16 +10,13 @@ class Robot {
 
 private:
 	int objectDetected = 0; // the side where the object is detected
-
 	int tick = 0;
 	const float safetyDistance = 10; // according with the speed. Expressed in cm
 	const float robotWidth = 20; // expressed in cm
 	const float marge = safetyDistance; // margin of movement. It should move between the marging and the safetyDistance
-
 	Adafruit_MotorShield AFMS = Adafruit_MotorShield();// Create the motor shield object with the default I2C address
 	Adafruit_DCMotor *motorLeft = AFMS.getMotor(4);// Motor 4 -> left 
 	Adafruit_DCMotor *motorRight = AFMS.getMotor(2);// Motor 2 -> right
-
 	volatile int currentState = FORWARD_;
 	boolean stop_ = false;
 	const int motorSpeed = 200;
