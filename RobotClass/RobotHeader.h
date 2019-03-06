@@ -5,6 +5,7 @@
 #define LEFT_ -1
 #define RIGHT_ 1
 #define Robot_h
+
 class Robot {
 
 private:
