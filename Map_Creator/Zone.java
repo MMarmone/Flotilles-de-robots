@@ -1,17 +1,19 @@
+import java.util.ArrayList;
+
 public class Zone {
 
     private double x1, y1;   // up left
     private double x2, y2;   // down right
 
     // Nodes contained in the zone
-    private ArrayOfNode nodes;
+    private ArrayList<Node> nodes;
 
     public Zone(double x, double y, double width, double height) {
         this.x1 = x;
         this.y1 = y;
         this.x2 = x + width;
         this.y2 = y + height;
-        this.nodes = new ArrayOfNode(100);
+        this.nodes = new ArrayList<>();
     }
 
     /**
@@ -82,10 +84,8 @@ public class Zone {
      */
     public boolean createLink(double linkRadius, double absorbtionRadius, Node node){
         if(node == null) return false;
-        Node[] myNodes = nodes.getNodes();
-        int nElements = nodes.getSize();
 
-        Node[] linked = new Node[nElements];
+        Node[] linked = new Node[nodes.size()];
 
         linkRadius = linkRadius * linkRadius;
         absorbtionRadius = absorbtionRadius * absorbtionRadius;
@@ -94,14 +94,14 @@ public class Zone {
         boolean absorbed = false;
 
         // for every node in the zone
-        for (int i = 0; i < nElements; i++) {
-            distance = node.squareDistance(myNodes[i]);
+        for (Node n : nodes){
+            distance = node.squareDistance(n);
             // if the distance is shorter than the absorbtion radius, then we absorb it
             if(distance < absorbtionRadius){
                 absorbed = true;
                 break;
                 // if the distance is shorter than the link radius, we add it to the array to create a link later
-            } else if(distance < linkRadius) linked[nLink++] = myNodes[i];
+            } else if(distance < linkRadius) linked[nLink++] = n;
         }
 
         if(!absorbed) {

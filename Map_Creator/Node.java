@@ -1,32 +1,32 @@
+import java.util.ArrayList;
+
 public class Node {
 
     // Position of the node in space
     private double x, y;
     // Set of nodes that have a link in (node -> this)
-    private ArrayOfNode in;
+    private ArrayList<Node> in;
     // Set of nodes that have a link out (this -> node)
-    private ArrayOfNode out;
+    private ArrayList<Node> out;
 
     // Constructor
     public Node(double x, double y){
         this.x = x;
         this.y = y;
-        this.in = new ArrayOfNode(100);
-        this.out = new ArrayOfNode(100);
+        this.in = new ArrayList<>();
+        this.out = new ArrayList<>();
     }
 
     // GETTERS
     double getX(){ return x; }
     double getY(){ return y; }
-    Node[] getOutLink(){ return out.getNodes(); }
-    Node[] getInLink(){ return in.getNodes(); }
 
     /**
      * Return the number of link incoming (node -> this)
      * @return
      */
     public int getInDegree(){
-        return in.getSize();
+        return in.size();
     }
 
     /**
@@ -34,7 +34,7 @@ public class Node {
      * @return
      */
     public int getOutDegree(){
-        return out.getSize();
+        return out.size();
     }
 
     /**

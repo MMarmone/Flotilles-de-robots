@@ -6,8 +6,8 @@ public class Main {
     private static MapGraphic map2D;
     private static JFrame frame;
 
-    public static void main(String[] args) throws InterruptedException {
-        map = new Map(5000, 5000, 2500, 2500);
+    public static void main(String[] args) {
+        map = new Map(500,500);
         frame = new JFrame("TER MAP");
         map2D = new MapGraphic(map);
 
@@ -16,50 +16,20 @@ public class Main {
         frame.pack();
         frame.setVisible(true);
 
-        /*
-        for(int i = 0; i < 5000; i ++) {
-            map.add(0, i);
-            Thread.sleep(1);
-            frame.repaint();
-        }
-        for(int i = 0; i < 5000; i ++){
-            map.add(i, 5000);
-            Thread.sleep(1);
-            frame.repaint();
-        }
-
-        for(int i = 0; i < 5000; i ++){
-            map.add(5000, 5000-i);
-            Thread.sleep(1);
-            frame.repaint();
-        }
-
-        for(int i = 0; i < 5000; i ++){
-            map.add(5000-i, 0);
-            Thread.sleep(1);
-            frame.repaint();
-        }
-
-        Mapping.saveJSON(map, "map.json");
-        */
-
-
-        Explorer robot = new Explorer(1, 1);
+        Explorer robot = new Explorer(10, 10);
         robot.setDistances(new double[]{0, 0, 0, 0, 0, 10});
 
-        robot.setAngle(6);
+        robot.setAngle(10);
 
         for(int turn = 0; turn < 4; turn++) {
-            for (int i = 0; i < 490; i++) {
+            for (int i = 0; i < 6000; i++) {
                 robot.addToTheMap(map);
-                robot.forward(10);
-                System.out.println("(" + robot.getX() + ", " + robot.getY() + ")");
-                Thread.sleep(1);
+                robot.forward(1);
+                map.generateMap();
                 frame.repaint();
             }
             robot.right(90);
         }
-
     }
 
 

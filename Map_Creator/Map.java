@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class Map {
 
     /**************************
@@ -21,96 +24,114 @@ public class Map {
 
     // Dimension of the map
     private double width, height;
-    // Number of zone in the map
-    private int nZone;
 
     // Zones
-    private Zone[] zones;
-    // Number of zone in the x-axis and y-axis
+    private HashMap<String, Zone> zones;
+    // Size of a zone
     private int xZone, yZone;
+
+    // SPECIAL
+    private double minX, minY, maxX, maxY;
 
     // Map converted to an array of int
     private int[][] map;
 
     // The set of nodes in the map
-    private ArrayOfNode nodes;
+    private ArrayList<Node> nodes;
 
 
-    // Constructor
-    public Map(double width, double height, double wZone, double hZone){
-        this.width = width;
-        this.height = height;
+    public Map(int wZone, int hZone){
+        width = 0;
+        height = 0;
+        minX = 100000; maxX = -100000;
+        minY = 100000; maxY = -100000;
+        map = new int[1][1];
+        nodes = new ArrayList<>();
+        zones = new HashMap<>();
 
-        double a = width / wZone;
-        double b = height / hZone;
+        xZone = wZone;
+        yZone = hZone;
+    }
 
-        xZone = (int) Math.ceil(a);
-        yZone = (int) Math.ceil(b);
+    /**
+     * Find the index x of the zone depending on x
+     * @param x position of the zone
+     * @return
+     */
+    private int findZoneX(double x){
+        int xIndex = (int) (x / xZone);
+        if(x < 0) xIndex--;
+        return xIndex;
+    }
 
-        nZone = xZone*yZone;
-        zones = new Zone[nZone];
-
-        nodes = new ArrayOfNode(1000);
-
-        for(int i = 0; i < xZone; i++){
-            for(int j = 0; j < yZone; j++){
-                zones[i+j*xZone] = new Zone(i * wZone, j * hZone, wZone, hZone);
-            }
-        }
-
-        init();
+    /**
+     * Find the index y of the zone depending on y
+     * @param y
+     * @return
+     */
+    private int findZoneY(double y){
+        int yIndex = (int) (y / yZone);
+        if(y < 0) yIndex--;
+        return yIndex;
     }
 
 
     /**
      * Create a link between the node node and all the nodes from the zone, depending on the position
      * @param pos
-     * @param index
+     * @param xIndex
+     * @param yIndex
      * @param node
      */
-    private void createLink(Position pos, int index, Node node){
-        int up = index - yZone, down = index + yZone, left = index - 1, right = index + 1;
-        int up_right = index - yZone + 1, up_left = index - yZone - 1, down_left = index + yZone - 1, down_right = index + yZone + 1;
+    private void createLink(Position pos, int xIndex, int yIndex, Node node){
+        String up = xIndex+":"+(yIndex-1);
+        String down = xIndex+":"+(yIndex+1);
+        String left = (xIndex-1)+":"+yIndex;
+        String right = (xIndex+1)+":"+yIndex;
+        String up_left = (xIndex-1)+":"+(yIndex-1);
+        String up_right = (xIndex+1)+":"+(yIndex-1);
+        String down_left = (xIndex-1)+":"+(yIndex+1);
+        String down_right = (xIndex+1)+":"+(yIndex+1);
 
         switch (pos){
             case UP:
-                if(up >= 0 && up < nZone) zones[up].createLink(LINK_RADIUS, ABSORBTION_RADIUS, node);
+                if(zones.get(up) != null) zones.get(up).createLink(LINK_RADIUS, ABSORBTION_RADIUS, node);
                 break;
 
             case DOWN:
-                if(down >= 0 && down < nZone) zones[down].createLink(LINK_RADIUS, ABSORBTION_RADIUS, node);
+                if(zones.get(down) != null) zones.get(down).createLink(LINK_RADIUS, ABSORBTION_RADIUS, node);
                 break;
 
             case LEFT:
-                if(left >= 0 && left < nZone) zones[left].createLink(LINK_RADIUS, ABSORBTION_RADIUS, node);
+                if(zones.get(left) != null) zones.get(left).createLink(LINK_RADIUS, ABSORBTION_RADIUS, node);
                 break;
 
             case RIGHT:
-                if(right >= 0 && right < nZone) zones[right].createLink(LINK_RADIUS, ABSORBTION_RADIUS, node);
+                if(zones.get(right) != null) zones.get(right).createLink(LINK_RADIUS, ABSORBTION_RADIUS, node);
                 break;
 
             case UP_LEFT:
-                if(up >= 0 && up < nZone) zones[up].createLink(LINK_RADIUS, ABSORBTION_RADIUS, node);
-                if(left >= 0 && left < nZone) zones[left].createLink(LINK_RADIUS, ABSORBTION_RADIUS, node);
-                if(up_left >= 0 && up_left < nZone) zones[up_left].createLink(LINK_RADIUS, ABSORBTION_RADIUS, node);
+                if(zones.get(up) != null) zones.get(up).createLink(LINK_RADIUS, ABSORBTION_RADIUS, node);
+                if(zones.get(left) != null) zones.get(left).createLink(LINK_RADIUS, ABSORBTION_RADIUS, node);
+                if(zones.get(up_left) != null) zones.get(up_left).createLink(LINK_RADIUS, ABSORBTION_RADIUS, node);
                 break;
 
             case UP_RIGHT:
-                if(up >= 0 && up < nZone) zones[up].createLink(LINK_RADIUS, ABSORBTION_RADIUS, node);
-                if(right >= 0 && right < nZone) zones[right].createLink(LINK_RADIUS, ABSORBTION_RADIUS, node);
-                if(up_right >= 0 && up_right < nZone) zones[up_right].createLink(LINK_RADIUS, ABSORBTION_RADIUS, node);
+                if(zones.get(up) != null) zones.get(up).createLink(LINK_RADIUS, ABSORBTION_RADIUS, node);
+                if(zones.get(right) != null) zones.get(right).createLink(LINK_RADIUS, ABSORBTION_RADIUS, node);
+                if(zones.get(up_right) != null) zones.get(up_right).createLink(LINK_RADIUS, ABSORBTION_RADIUS, node);
                 break;
 
             case DOWN_LEFT:
-                if(down >= 0 && down < nZone) zones[down].createLink(LINK_RADIUS, ABSORBTION_RADIUS, node);
-                if(left >= 0 && left < nZone) zones[left].createLink(LINK_RADIUS, ABSORBTION_RADIUS, node);
-                if(down_left >= 0 && down_left < nZone) zones[down_left].createLink(LINK_RADIUS, ABSORBTION_RADIUS, node);
+                if(zones.get(down) != null) zones.get(down).createLink(LINK_RADIUS, ABSORBTION_RADIUS, node);
+                if(zones.get(left) != null) zones.get(left).createLink(LINK_RADIUS, ABSORBTION_RADIUS, node);
+                if(zones.get(down_left) != null) zones.get(down_left).createLink(LINK_RADIUS, ABSORBTION_RADIUS, node);
                 break;
 
             case DOWN_RIGHT:
-                if(down >= 0 && down < nZone) zones[down].createLink(LINK_RADIUS, ABSORBTION_RADIUS, node);
-                if(right >= 0 && right < nZone) zones[right].createLink(LINK_RADIUS, ABSORBTION_RADIUS, node);
-                if(down_right >= 0 && down_right < nZone) zones[down_right].createLink(LINK_RADIUS, ABSORBTION_RADIUS, node);
+                if(zones.get(down) != null) zones.get(down).createLink(LINK_RADIUS, ABSORBTION_RADIUS, node);
+                if(zones.get(right) != null) zones.get(right).createLink(LINK_RADIUS, ABSORBTION_RADIUS, node);
+                if(zones.get(down_right) != null) zones.get(down_right).createLink(LINK_RADIUS, ABSORBTION_RADIUS, node);
                 break;
         }
     }
@@ -121,27 +142,51 @@ public class Map {
      * @param yPos
      */
     public void add(double xPos, double yPos){
-        Position position;
-        Node node = null;
-        boolean added = false;
+        // Update information of the map if needed
+        if(xPos > maxX) maxX = xPos;
+        if(xPos < minX) minX = xPos;
+        if(yPos > maxY) maxY = yPos;
+        if(yPos < minY) minY = yPos;
 
-        for(int i = 0; i < nZone; i++){
-            position = zones[i].contains(xPos, yPos);
+        // Information on the point we want to add
+        int xIndex = findZoneX(xPos);
+        int yIndex = findZoneY(yPos);
+        String key = xIndex+":"+yIndex;
 
-            // If the node must be inside the zone i.
-            if(position != Position.NONE) {
-                node = new Node(xPos, yPos);
-                added = zones[i].add(LINK_RADIUS, ABSORBTION_RADIUS, node);
+        // If the zone doesn't exist, we create it
+        if(zones.get(key) == null) zones.put(key, new Zone(xIndex * xZone, yIndex * yZone, xZone, yZone));
 
-                // Add to the zone next to it, if needed
-                if(added && position != Position.CENTER) createLink(position, i, node);
-            }
-        }
+        // Creating the position and the node
+        Position position = zones.get(key).contains(xPos, yPos);
+        Node node = new Node(xPos, yPos);
 
-        // If the node is added to the zone, then we add it to the map
-        if(added) {
-            nodes.add(node);
-            addPoint(node);
+        // We see if the node is added or not
+        boolean added = zones.get(key).add(LINK_RADIUS, ABSORBTION_RADIUS, node);
+
+        // Add to the zone next to it, if needed
+        if(added && position != Position.CENTER) createLink(position, xIndex, yIndex, node);
+        if(added) nodes.add(node);
+    }
+
+    /**
+     * Generate the map matrix
+     */
+    public void generateMap(){
+        int floorX = (int) Math.floor(minX);    // xPos of the most far-left node
+        int floorY = (int) Math.floor(minY);    // yPos of the most far-up node
+        int ceilX = (int) Math.ceil(maxX);      // xPos of the most far-right node
+        int ceilY = (int) Math.ceil(maxY);      // yPos of the most far-down node
+
+        width = (ceilX - floorX) / RATIO;       // width of the map
+        height = (ceilY - floorY) / RATIO;      // height of the map
+
+        if(width < 0) return;
+
+        map = new int[(int) width + 1][(int) height + 1];
+        for(Node node : nodes){
+            int x = (int) (Math.round(node.getX() - floorX) / RATIO);
+            int y = (int) (Math.round(node.getY() - floorY) / RATIO);
+            map[x][y] = 1;
         }
     }
 
@@ -171,7 +216,7 @@ public class Map {
      * @return
      */
     int numberOfNode(){
-        return nodes.getSize();
+        return nodes.size();
     }
 
     /**
@@ -188,28 +233,6 @@ public class Map {
      */
     double getHeight(){
         return height;
-    }
-
-    /**
-     * Initialiaze the map
-     */
-    private void init(){
-        int width = (int) Math.round(getWidth() / RATIO) + 1;
-        int height = (int) Math.round(getHeight() / RATIO) + 1;
-        map = new int[width][height];
-        for (int w = 0; w < width; w++) {
-            for (int h = 0; h < height; h++) map[w][h] = 0;
-        }
-    }
-
-    /**
-     * Add a point to the map
-     * @param node
-     */
-    private void addPoint(Node node){
-        int xPos = (int) Math.round(node.getX() / RATIO);
-        int yPos = (int) Math.round(node.getY() / RATIO);
-        map[xPos][yPos] = 1;
     }
 
     /**

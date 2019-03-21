@@ -15,6 +15,8 @@ public class MapGraphic extends JPanel {
     private final int PIXEL_SIZE = 2;
     private final int PADDING = 4;
 
+    private double RATIO = 1;
+
 
     // Constructor
     public MapGraphic(Map map){
@@ -22,8 +24,8 @@ public class MapGraphic extends JPanel {
         MAP_HEIGHT = map.getMap().length;
         MAP_WIDTH = map.getMap()[0].length;
 
-        // Set the size of the graphic window to the size of the map
-        setPreferredSize(new Dimension(MAP_WIDTH + PADDING + PADDING, MAP_HEIGHT + PADDING + PADDING));
+        setPreferredSize(new Dimension(600, 600));
+
     }
 
     @Override
@@ -35,15 +37,30 @@ public class MapGraphic extends JPanel {
 
         // Get the map matrix
         int[][] map = this.map.getMap();
-
+        MAP_HEIGHT = map.length;
+        MAP_WIDTH = map[0].length;
         // Set the color to the color we will draw the objects
         g.setColor(color);
+
+        RATIO = (600.0 - PADDING - PADDING) / Math.max(MAP_WIDTH, MAP_HEIGHT);
+
+        int pixel_size = PIXEL_SIZE * (int) RATIO;
+        if(pixel_size < 1) pixel_size = 1;
 
         for (int i = 0; i < MAP_HEIGHT; i++) {
             for (int j = 0; j < MAP_WIDTH; j++) {
                 // If there is an object (!= 0), we draw a pixel
-                if(map[i][j] != 0) g.fillRect(i+PADDING, j+PADDING, PIXEL_SIZE, PIXEL_SIZE);
+                if(map[i][j] != 0) g.fillRect((int) (i*RATIO)+PADDING, (int) (j*RATIO)+PADDING, pixel_size, pixel_size);
             }
         }
     }
+
+    int getMAP_HEIGHT(){
+        return MAP_HEIGHT + PADDING + PADDING;
+    }
+
+    int getMAP_WIDTH(){
+        return MAP_WIDTH + PADDING + PADDING;
+    }
+
 }
