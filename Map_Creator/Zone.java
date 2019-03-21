@@ -1,12 +1,12 @@
 public class Zone {
 
-    private float x1, y1;   // up left
-    private float x2, y2;   // down right
+    private double x1, y1;   // up left
+    private double x2, y2;   // down right
 
     // Nodes contained in the zone
     private ArrayOfNode nodes;
 
-    public Zone(float x, float y, float width, float height) {
+    public Zone(double x, double y, double width, double height) {
         this.x1 = x;
         this.y1 = y;
         this.x2 = x + width;
@@ -20,7 +20,7 @@ public class Zone {
      * @param yPos
      * @return
      */
-    public Position contains(float xPos, float yPos) {
+    public Position contains(double xPos, double yPos) {
         // if the position is contained within the zone
         if(x1 <= xPos && xPos <= x2 && y1 <= yPos && yPos <= y2){
 
@@ -66,7 +66,7 @@ public class Zone {
      * @param node
      * @return
      */
-    public boolean add(float linkRadius, float absorbtionRadius, Node node) {
+    public boolean add(double linkRadius, double absorbtionRadius, Node node) {
         boolean created = createLink(linkRadius, absorbtionRadius, node);
         if(created) nodes.add(node);
         return created;
@@ -80,7 +80,7 @@ public class Zone {
      * @param node
      * @return
      */
-    public boolean createLink(float linkRadius, float absorbtionRadius, Node node){
+    public boolean createLink(double linkRadius, double absorbtionRadius, Node node){
         if(node == null) return false;
         Node[] myNodes = nodes.getNodes();
         int nElements = nodes.getSize();
@@ -89,7 +89,7 @@ public class Zone {
 
         linkRadius = linkRadius * linkRadius;
         absorbtionRadius = absorbtionRadius * absorbtionRadius;
-        float distance;
+        double distance;
         int nLink = 0;
         boolean absorbed = false;
 

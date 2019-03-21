@@ -16,6 +16,7 @@ public class Main {
         frame.pack();
         frame.setVisible(true);
 
+        /*
         for(int i = 0; i < 5000; i ++) {
             map.add(0, i);
             Thread.sleep(1);
@@ -40,6 +41,24 @@ public class Main {
         }
 
         Mapping.saveJSON(map, "map.json");
+        */
+
+
+        Explorer robot = new Explorer(1, 1);
+        robot.setDistances(new double[]{0, 0, 0, 0, 0, 10});
+
+        robot.setAngle(6);
+
+        for(int turn = 0; turn < 4; turn++) {
+            for (int i = 0; i < 490; i++) {
+                robot.addToTheMap(map);
+                robot.forward(10);
+                System.out.println("(" + robot.getX() + ", " + robot.getY() + ")");
+                Thread.sleep(1);
+                frame.repaint();
+            }
+            robot.right(90);
+        }
 
     }
 

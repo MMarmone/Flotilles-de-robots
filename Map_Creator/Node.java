@@ -1,14 +1,14 @@
 public class Node {
 
     // Position of the node in space
-    private float x, y;
+    private double x, y;
     // Set of nodes that have a link in (node -> this)
     private ArrayOfNode in;
     // Set of nodes that have a link out (this -> node)
     private ArrayOfNode out;
 
     // Constructor
-    public Node(float x, float y){
+    public Node(double x, double y){
         this.x = x;
         this.y = y;
         this.in = new ArrayOfNode(100);
@@ -16,8 +16,8 @@ public class Node {
     }
 
     // GETTERS
-    float getX(){ return x; }
-    float getY(){ return y; }
+    double getX(){ return x; }
+    double getY(){ return y; }
     Node[] getOutLink(){ return out.getNodes(); }
     Node[] getInLink(){ return in.getNodes(); }
 
@@ -87,7 +87,7 @@ public class Node {
      * @param yPos
      * @return
      */
-    public boolean isInRadius(float radius, float xPos, float yPos){
+    public boolean isInRadius(double radius, double xPos, double yPos){
         radius = radius * radius;
         return squareDistance(xPos, yPos) < radius;
     }
@@ -98,7 +98,7 @@ public class Node {
      * @param node
      * @return
      */
-    public boolean isInRadius(float radius, Node node){
+    public boolean isInRadius(double radius, Node node){
         return isInRadius(radius, node.getX(), node.getY());
     }
 
@@ -108,9 +108,9 @@ public class Node {
      * @param yPos
      * @return
      */
-    public float squareDistance(float xPos, float yPos){
-        float X = (x - xPos);
-        float Y = (y - yPos);
+    public double squareDistance(double xPos, double yPos){
+        double X = (x - xPos);
+        double Y = (y - yPos);
         return X*X + Y*Y;
     }
 
@@ -119,7 +119,7 @@ public class Node {
      * @param node
      * @return
      */
-    public float squareDistance(Node node){
+    public double squareDistance(Node node){
         return squareDistance(node.getX(), node.getY());
     }
 

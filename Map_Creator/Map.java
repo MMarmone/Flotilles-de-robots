@@ -7,12 +7,12 @@ public class Map {
     public static final int RADIAN = 0, DEGREE = 1;
 
     // Define at which distance a node get absorbed (in mm).
-    public static final float ABSORBTION_RADIUS = 4;
+    public static final double ABSORBTION_RADIUS = 4;
     // Define at which distance 2 nodes are linked (in mm).
-    public static final float LINK_RADIUS = 8;
+    public static final double LINK_RADIUS = 8;
 
     // Define the scale of the map created (default : 1/8).
-    private static final int RATIO = 8;
+    private static final double RATIO = 8;
 
 
     /**************************
@@ -20,7 +20,7 @@ public class Map {
      **************************/
 
     // Dimension of the map
-    private float width, height;
+    private double width, height;
     // Number of zone in the map
     private int nZone;
 
@@ -37,7 +37,7 @@ public class Map {
 
 
     // Constructor
-    public Map(float width, float height, float wZone, float hZone){
+    public Map(double width, double height, double wZone, double hZone){
         this.width = width;
         this.height = height;
 
@@ -120,7 +120,7 @@ public class Map {
      * @param xPos
      * @param yPos
      */
-    public void add(float xPos, float yPos){
+    public void add(double xPos, double yPos){
         Position position;
         Node node = null;
         boolean added = false;
@@ -156,13 +156,13 @@ public class Map {
      * @param distance
      * @param method
      */
-    public void add(float xPos, float yPos, float robAngle, float angle, float distance, int method){
+    public void add(double xPos, double yPos, double robAngle, double angle, double distance, int method){
         if(method == DEGREE) {
             angle = (angle + robAngle) % 360;
-            angle = (float) 3.141592654 * angle / 180;
+            angle = 3.141592654 * angle / 180;
         }
-        float x = xPos + (float) Math.cos(angle) * distance;
-        float y = yPos + (float) Math.sin(angle) * distance;
+        double x = xPos + Math.cos(angle) * distance;
+        double y = yPos + Math.sin(angle) * distance;
         add(x, y);
     }
 
@@ -178,7 +178,7 @@ public class Map {
      * Return the width of the map
      * @return
      */
-    float getWidth(){
+    double getWidth(){
         return width;
     }
 
@@ -186,7 +186,7 @@ public class Map {
      * Return the height of the map
      * @return
      */
-    float getHeight(){
+    double getHeight(){
         return height;
     }
 
@@ -194,8 +194,8 @@ public class Map {
      * Initialiaze the map
      */
     private void init(){
-        int width = Math.round(getWidth() / RATIO) + 1;
-        int height = Math.round(getHeight() / RATIO) + 1;
+        int width = (int) Math.round(getWidth() / RATIO) + 1;
+        int height = (int) Math.round(getHeight() / RATIO) + 1;
         map = new int[width][height];
         for (int w = 0; w < width; w++) {
             for (int h = 0; h < height; h++) map[w][h] = 0;
@@ -207,8 +207,8 @@ public class Map {
      * @param node
      */
     private void addPoint(Node node){
-        int xPos = Math.round(node.getX() / RATIO);
-        int yPos = Math.round(node.getY() / RATIO);
+        int xPos = (int) Math.round(node.getX() / RATIO);
+        int yPos = (int) Math.round(node.getY() / RATIO);
         map[xPos][yPos] = 1;
     }
 
