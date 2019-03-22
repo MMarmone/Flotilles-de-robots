@@ -12,6 +12,9 @@ public class MapGraphic extends JPanel {
 
     // Color of the objects on the map
     private final Color color = Color.BLACK;
+    private final Color link_color = Color.BLACK;
+    private final Color zone_border = Color.RED;
+    private final Color zone_fill = Color.PINK;
 
     // Size of a pixel in the map
     private final int PIXEL_SIZE = 3;
@@ -57,10 +60,33 @@ public class MapGraphic extends JPanel {
             MAP_WIDTH = this.map.getWidth();
 
 
-            // Set the color to the color we will draw the objects
-            g.setColor(color);
-
             RATIO = (600.0 - PADDING - PADDING) / Math.max(MAP_WIDTH, MAP_HEIGHT);
+
+            int minX = map.getFloorX();
+            int minY = map.getFloorY();
+            Collection<Zone> zones = map.getZones().values();
+
+            for(Zone zone : zones){
+                int x1 = (int) (Math.round(zone.getX1() - minX) * RATIO) + PADDING;
+                int x2 = (int) (Math.round(zone.getX2() - minX) * RATIO) + PADDING;
+                int y1 = (int) (Math.round(zone.getY1() - minY) * RATIO) + PADDING;
+                int y2 = (int) (Math.round(zone.getY2() - minY) * RATIO) + PADDING;
+
+                // Color of the inside
+                g.setColor(zone_fill);
+                g.fillRect(x1, y1, x2-x1, y2-y1);
+
+                // Color of the border
+                g.setColor(zone_border);
+
+                g.drawLine(x1, y1, x2, y1);
+                g.drawLine(x2, y1, x2, y2);
+                g.drawLine(x2, y2, x1, y2);
+                g.drawLine(x1, y2, x1, y1);
+            }
+
+            // Set the color to the color we will draw the nodes and links
+            g.setColor(color);
 
             ArrayList<Node> nodes = new ArrayList<>();
             nodes.addAll(this.map.getNodes());
@@ -70,28 +96,14 @@ public class MapGraphic extends JPanel {
                 int y = (int) (node.getyIndex() * RATIO) + PADDING;
                 g.fillRect(x-HALF_PIXEL, y-HALF_PIXEL, PIXEL_SIZE, PIXEL_SIZE);
                 if (drawLink) {
+                    g.setColor(link_color);
                     for (Node out : node.getOut()) {
                         int x2 = (int) (out.getxIndex() * RATIO) + PADDING;
                         int y2 = (int) (out.getyIndex() * RATIO) + PADDING;
                         g.drawLine(x, y, x2, y2);
                     }
+                    g.setColor(color);
                 }
-            }
-
-            int minX = map.getFloorX();
-            int minY = map.getFloorY();
-            Collection<Zone> zones = map.getZones().values();
-            g.setColor(Color.red);
-            for(Zone zone : zones){
-                int x1 = (int) (Math.round(zone.getX1() - minX) * RATIO) + PADDING;
-                int x2 = (int) (Math.round(zone.getX2() - minX) * RATIO) + PADDING;
-                int y1 = (int) (Math.round(zone.getY1() - minY) * RATIO) + PADDING;
-                int y2 = (int) (Math.round(zone.getY2() - minY) * RATIO) + PADDING;
-
-                g.drawLine(x1, y1, x2, y1);
-                g.drawLine(x2, y1, x2, y2);
-                g.drawLine(x2, y2, x1, y2);
-                g.drawLine(x1, y2, x1, y1);
             }
         }
 
