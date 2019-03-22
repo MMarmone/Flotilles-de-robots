@@ -78,13 +78,15 @@ public class MapGraphic extends JPanel {
                 }
             }
 
+            int minX = map.getFloorX();
+            int minY = map.getFloorY();
             Collection<Zone> zones = map.getZones().values();
             g.setColor(Color.red);
             for(Zone zone : zones){
-                int x1 = (int) (Math.round(zone.getX1()) * RATIO) + PADDING;
-                int x2 = (int) (Math.round(zone.getX2()) * RATIO) + PADDING;
-                int y1 = (int) (Math.round(zone.getY1()) * RATIO) + PADDING;
-                int y2 = (int) (Math.round(zone.getY2()) * RATIO) + PADDING;
+                int x1 = (int) (Math.round(zone.getX1() - minX) * RATIO) + PADDING;
+                int x2 = (int) (Math.round(zone.getX2() - minX) * RATIO) + PADDING;
+                int y1 = (int) (Math.round(zone.getY1() - minY) * RATIO) + PADDING;
+                int y2 = (int) (Math.round(zone.getY2() - minY) * RATIO) + PADDING;
 
                 g.drawLine(x1, y1, x2, y1);
                 g.drawLine(x2, y1, x2, y2);

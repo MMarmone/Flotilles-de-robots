@@ -20,11 +20,11 @@ public class Main {
         robot.setDistances(new double[]{0, 0, 0, 0, 0, 0.1});
 
         robot.setPos(10,10);
-        robot.setAngle(0);
+        robot.setAngle(20);
 
 
         for(int turn = 0; turn < 4; turn++) {
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 200; i++) {
                 robot.addToTheMap(map);
                 robot.forward(6);
                 map.generateMap();

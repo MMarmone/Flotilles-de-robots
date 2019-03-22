@@ -33,6 +33,7 @@ public class Map {
 
     // SPECIAL
     private double minX, minY, maxX, maxY;
+    private int floorX, floorY;
 
     // The set of nodes in the map
     private ArrayList<Node> nodes;
@@ -169,8 +170,8 @@ public class Map {
      * Generate the map matrix
      */
     public boolean generateMap(){
-        int floorX = (int) Math.floor(minX);    // xPos of the most far-left node
-        int floorY = (int) Math.floor(minY);    // yPos of the most far-up node
+        floorX = (int) Math.floor(minX);    // xPos of the most far-left node
+        floorY = (int) Math.floor(minY);    // yPos of the most far-up node
         int ceilX = (int) Math.ceil(maxX);      // xPos of the most far-right node
         int ceilY = (int) Math.ceil(maxY);      // yPos of the most far-down node
 
@@ -187,6 +188,14 @@ public class Map {
             }
         }
         return true;
+    }
+
+    public int getFloorX(){
+        return floorX;
+    }
+
+    public int getFloorY(){
+        return floorY;
     }
 
     /**
