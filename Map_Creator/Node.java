@@ -4,6 +4,7 @@ public class Node {
 
     // Position of the node in space
     private double x, y;
+    private int xIndex, yIndex;
     // Set of nodes that have a link in (node -> this)
     private ArrayList<Node> in;
     // Set of nodes that have a link out (this -> node)
@@ -20,6 +21,17 @@ public class Node {
     // GETTERS
     double getX(){ return x; }
     double getY(){ return y; }
+    int getxIndex(){ return xIndex; }
+    int getyIndex(){ return yIndex; }
+
+    public void setIndex(int xIndex, int yIndex){
+        this.xIndex = xIndex;
+        this.yIndex = yIndex;
+    }
+
+    public ArrayList<Node> getOut(){
+        return out;
+    }
 
     /**
      * Return the number of link incoming (node -> this)

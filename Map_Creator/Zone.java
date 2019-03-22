@@ -16,6 +16,22 @@ public class Zone {
         this.nodes = new ArrayList<>();
     }
 
+    public double getX1(){
+        return x1;
+    }
+
+    public double getX2() {
+        return x2;
+    }
+
+    public double getY1() {
+        return y1;
+    }
+
+    public double getY2() {
+        return y2;
+    }
+
     /**
      * Return the position of the point (xPos, yPos) in the zone.
      * @param xPos
@@ -30,7 +46,7 @@ public class Zone {
             boolean left = x1 >= xPos - Map.LINK_RADIUS;
             boolean up = y1 >= yPos - Map.LINK_RADIUS;
             boolean right = x2 <= xPos + Map.LINK_RADIUS;
-            boolean down = y2 >= yPos + Map.LINK_RADIUS;
+            boolean down = y2 <= yPos + Map.LINK_RADIUS;
 
             // Corner values
             if(up && left) return Position.UP_LEFT;
@@ -111,5 +127,9 @@ public class Zone {
             }
         }
         return !absorbed;
+    }
+
+    public ArrayList<Node> getNodes(){
+        return nodes;
     }
 }

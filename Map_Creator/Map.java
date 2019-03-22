@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 public class Map {
@@ -15,7 +16,7 @@ public class Map {
     public static final double LINK_RADIUS = 8;
 
     // Define the scale of the map created (default : 1/8).
-    private static final double RATIO = 8;
+    private static final double RATIO = 1;
 
 
     /**************************
@@ -23,7 +24,7 @@ public class Map {
      **************************/
 
     // Dimension of the map
-    private double width, height;
+    private int width, height;
 
     // Zones
     private HashMap<String, Zone> zones;
@@ -32,9 +33,6 @@ public class Map {
 
     // SPECIAL
     private double minX, minY, maxX, maxY;
-
-    // Map converted to an array of int
-    private int[][] map;
 
     // The set of nodes in the map
     private ArrayList<Node> nodes;
@@ -45,7 +43,6 @@ public class Map {
         height = 0;
         minX = 100000; maxX = -100000;
         minY = 100000; maxY = -100000;
-        map = new int[1][1];
         nodes = new ArrayList<>();
         zones = new HashMap<>();
 
@@ -171,23 +168,25 @@ public class Map {
     /**
      * Generate the map matrix
      */
-    public void generateMap(){
+    public boolean generateMap(){
         int floorX = (int) Math.floor(minX);    // xPos of the most far-left node
         int floorY = (int) Math.floor(minY);    // yPos of the most far-up node
         int ceilX = (int) Math.ceil(maxX);      // xPos of the most far-right node
         int ceilY = (int) Math.ceil(maxY);      // yPos of the most far-down node
 
-        width = (ceilX - floorX) / RATIO;       // width of the map
-        height = (ceilY - floorY) / RATIO;      // height of the map
+        width = (int) ((ceilX - floorX) / RATIO) + 1;       // width of the map
+        height = (int) ((ceilY - floorY) / RATIO) + 1;      // height of the map
 
-        if(width < 0) return;
+        if(width < 0) return false;
 
-        map = new int[(int) width + 1][(int) height + 1];
-        for(Node node : nodes){
-            int x = (int) (Math.round(node.getX() - floorX) / RATIO);
-            int y = (int) (Math.round(node.getY() - floorY) / RATIO);
-            map[x][y] = 1;
+        for(Zone zone : zones.values()){
+            for(Node node : zone.getNodes()){
+                int x = (int) (Math.round(node.getX() - floorX) / RATIO);
+                int y = (int) (Math.round(node.getY() - floorY) / RATIO);
+                node.setIndex(x, y);
+            }
         }
+        return true;
     }
 
     /**
@@ -219,11 +218,19 @@ public class Map {
         return nodes.size();
     }
 
+    ArrayList<Node> getNodes(){
+        return nodes;
+    }
+
+    HashMap<String, Zone> getZones(){
+        return zones;
+    }
+
     /**
      * Return the width of the map
      * @return
      */
-    double getWidth(){
+    int getWidth(){
         return width;
     }
 
@@ -231,16 +238,8 @@ public class Map {
      * Return the height of the map
      * @return
      */
-    double getHeight(){
+    int getHeight(){
         return height;
-    }
-
-    /**
-     * Return the map
-     * @return
-     */
-    public int[][] getMap(){
-        return map;
     }
 
 }
