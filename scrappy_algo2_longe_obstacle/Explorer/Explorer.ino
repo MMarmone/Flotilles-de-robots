@@ -76,9 +76,11 @@ class Explorer {
     // Max distance at which we add a point to the map (in mm)
     int DRAW_DISTANCE = 400;
     // Error margin when moving along an object (in mm)
-    int ERROR_MARGIN = 20;
+    int ERROR_MARGIN = 30;
     // Distance at which we will move along an object (in mm)
-    int FOLLOW_DISTANCE = 150;
+    int FOLLOW_DISTANCE = 160;
+    // Speed of the wheels
+    int DEFAULT_SPEED = 100;
 
     /*********************************
      * DEPENDS ON THE ROBOT'S SPEED
@@ -228,6 +230,14 @@ float calculDistance(uint8_t trigPin, uint8_t echoPin){
 
     }
 
+    void speedLeft(int motorSpeed){
+      motorLeft->setSpeed(motorSpeed);
+    }
+
+    void speedRight(int motorSpeed){
+      motorRight->setSpeed(motorSpeed);
+    }
+
     /**
      * Move the robot
      */
@@ -257,20 +267,29 @@ float calculDistance(uint8_t trigPin, uint8_t echoPin){
      * Move the robot to follow an object on a certain side
      */
     void follow(){
+        int distance = 7;
         // If there is something on the side at a good distance, we continue to go forward
         if(isThereSomething(FOLLOWING_SIDE, FOLLOW_DISTANCE + ERROR_MARGIN)) {
             // If we're too close, we try to turn a bit
             if(distances[FOLLOWING_SIDE] <= FOLLOW_DISTANCE - ERROR_MARGIN) {
                 if(FOLLOWING_SIDE == FAR_RIGHT) left(10);
                 if(FOLLOWING_SIDE == FAR_LEFT) right(10);
+                
+                forward(4);
             }
-            forward(50);
+            if(!contact[UP_RIGHT] && !contact[UP_LEFT]) forward(7);
+            else backward(7);
         }
         else{
             // If there is no more something at the side, we try to turn and go forward
-            if(FOLLOWING_SIDE == FAR_RIGHT) left(10);
-            else right(10);
-            forward(50);
+            int cpt = 0;
+            while(!isThereSomething(FOLLOWING_SIDE, FOLLOW_DISTANCE + ERROR_MARGIN) && cpt < 9){
+              if(FOLLOWING_SIDE == FAR_RIGHT) right(10);
+              if(FOLLOWING_SIDE == FAR_LEFT) left(10);
+              forward(8);
+              cpt++;
+              updateDistance();
+            }
 
             // Still nothing ? We stop to follow and try to explore something else
             if(!isThereSomething(FOLLOWING_SIDE, FOLLOW_DISTANCE + ERROR_MARGIN)) FOLLOWING_SIDE = -1;
@@ -289,18 +308,24 @@ float calculDistance(uint8_t trigPin, uint8_t echoPin){
     }
     void left(){
         // Wheels go left
-        motorLeft->run(RELEASE);
+        motorLeft->run(BACKWARD);
         motorRight->run(FORWARD);
     }
     void right(){
         // Wheels go right
         motorLeft->run(FORWARD);
-        motorRight->run(RELEASE);
+        motorRight->run(BACKWARD);
     }
     void backward(){
         // Wheels go backward
         motorRight->run(BACKWARD);
         motorLeft->run(BACKWARD);
+    }
+
+    void stopmamene(){
+        motorLeft->run(RELEASE);
+        motorRight->run(RELEASE);
+        for(int i = 0; i < 30000; i++){}
     }
 
     /**
@@ -322,6 +347,7 @@ float calculDistance(uint8_t trigPin, uint8_t echoPin){
             updatePos(MM_PER_TICK);
             forward();
         }
+        stopmamene();
     }
 
     /**
@@ -333,6 +359,7 @@ float calculDistance(uint8_t trigPin, uint8_t echoPin){
             addAngle(-ANGLE_PER_TICK);
             left();
         }
+        stopmamene();
     }
 
     /**
@@ -344,6 +371,7 @@ float calculDistance(uint8_t trigPin, uint8_t echoPin){
             addAngle(ANGLE_PER_TICK);
             right();
         }
+        stopmamene();
     }
 
     /**
@@ -355,6 +383,7 @@ float calculDistance(uint8_t trigPin, uint8_t echoPin){
             updatePos(-MM_PER_TICK);
             backward();
         }
+        stopmamene();
     }
 
     /**
@@ -399,12 +428,13 @@ float calculDistance(uint8_t trigPin, uint8_t echoPin){
 };
 
     Explorer* robot;
+    boolean test;
     
     void setup(){
       Serial.begin(9600);
       AFMS.begin();
 
-      robot = new Explorer(10, 0.5);
+      robot = new Explorer(5.5, 1.55);
       
       // Left wheel
       motorLeft->setSpeed(motorSpeed);
@@ -415,10 +445,16 @@ float calculDistance(uint8_t trigPin, uint8_t echoPin){
       motorRight->setSpeed(motorSpeed);
       //motorRight->run(FORWARD);
       //motorRight->run(RELEASE);
-       
+
+      
     }
 
     void loop(){
+      /*
+      if(!test){
+        test = true;
+        robot->forward(500);
+      }*/
       robot->explore();
     }
     
