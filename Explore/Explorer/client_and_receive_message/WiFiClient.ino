@@ -6,15 +6,16 @@
 #include <ESP8266WiFi.h>
 
 #ifndef STASSID
-#define STASSID "HUAWEI P8 lite"
-#define STAPSK  "12341234"
+#define STASSID "HUAWEI P20"
+#define STAPSK  "azerty2a"
 #endif
 
 const char* ssid     = STASSID;
 const char* password = STAPSK;
 
 const char* host = "192.168.43.170";
-const uint16_t port = 80;
+const uint16_t port = 8080;
+int data; //Initialized variable to store recieved data
 
 void setup() {
   Serial.begin(115200);
@@ -60,6 +61,8 @@ void loop() {
   // This will send a string to the server
   Serial.println("sending data to server");
   if (client.connected()) {
+    data = Serial.read(); //Read the serial data and store it*
+    client.println(data);
     client.println("hello from ESP8266");
   }
 
