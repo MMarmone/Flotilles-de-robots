@@ -15,6 +15,9 @@ const char* password = STAPSK;
 
 const char* host = "192.168.43.170";
 const uint16_t port = 8080;
+
+boolean first_time = true;
+
 int data; //Initialized variable to store recieved data
 
 void setup() {
@@ -43,7 +46,7 @@ void setup() {
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
 }
-
+WiFiClient client;
 void loop() {
   Serial.print("connecting to ");
   Serial.print(host);
@@ -51,23 +54,22 @@ void loop() {
   Serial.println(port);
 
   // Use WiFiClient class to create TCP connections
-  WiFiClient client;
-  if (!client.connect(host, port)) {
+  if (first_time && !client.connect(host, port)) {
     Serial.println("connection failed");
     delay(5000);
     return;
   }
-
+  first_time = false;
   // This will send a string to the server
   Serial.println("sending data to server");
   if (client.connected()) {
     data = Serial.read(); //Read the serial data and store it*
-    client.println(data);
-    client.println("hello from ESP8266");
+    if(data != -1) client.println(data);
+    //client.println("hello from ESP8266");
   }
 
   // wait for data to be available
-  unsigned long timeout = millis();
+ /* unsigned long timeout = millis();
   while (client.available() == 0) {
     if (millis() - timeout > 5000) {
       Serial.println(">>> Client Timeout !");
@@ -75,7 +77,7 @@ void loop() {
       delay(60000);
       return;
     }
-  }
+  }*/
 
   // Read all the lines of the reply from server and print them to Serial
   Serial.println("receiving from remote server");
@@ -86,9 +88,9 @@ void loop() {
   }
 
   // Close the connection
-  Serial.println();
+  /*Serial.println();
   Serial.println("closing connection");
-  client.stop();
+  client.stop();*/
 
-  delay(300000); // execute once every 5 minutes, don't flood remote service
+  //delay(300000); // execute once every 5 minutes, don't flood remote service
 }
