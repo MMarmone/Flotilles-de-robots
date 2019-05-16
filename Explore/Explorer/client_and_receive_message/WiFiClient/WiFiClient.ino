@@ -6,7 +6,7 @@
 #include <ESP8266WiFi.h>
 
 #ifndef STASSID
-#define STASSID "HUAWEI P20"
+#define STASSID "jon snow est mort ep5 s8"
 #define STAPSK  "azerty2a"
 #endif
 
@@ -18,7 +18,7 @@ const uint16_t port = 8080;
 
 boolean first_time = true;
 
-int data; //Initialized variable to store recieved data
+String data; //Initialized variable to store recieved data
 
 void setup() {
   Serial.begin(115200);
@@ -41,17 +41,17 @@ void setup() {
     Serial.print(".");
   }
 
-  Serial.println("");
+  /*Serial.println("");
   Serial.println("WiFi connected");
   Serial.println("IP address: ");
-  Serial.println(WiFi.localIP());
+  Serial.println(WiFi.localIP());*/
 }
 WiFiClient client;
 void loop() {
-  Serial.print("connecting to ");
+  /*Serial.print("connecting to ");
   Serial.print(host);
   Serial.print(':');
-  Serial.println(port);
+  Serial.println(port);*/
 
   // Use WiFiClient class to create TCP connections
   if (first_time && !client.connect(host, port)) {
@@ -63,8 +63,9 @@ void loop() {
   // This will send a string to the server
   Serial.println("sending data to server");
   if (client.connected()) {
-    data = Serial.read(); //Read the serial data and store it*
-    if(data != -1) client.println(data);
+    data = Serial.readString(); //Read the serial data and store it*
+    Serial.println(data);
+    if(data != "") client.println(data);
     //client.println("hello from ESP8266");
   }
 

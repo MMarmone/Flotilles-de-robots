@@ -1,5 +1,9 @@
 #include <math.h>
 #include <Adafruit_MotorShield.h>
+#include <string.h>
+#include<SoftwareSerial.h> //Included SoftwareSerial Library
+//Started SoftwareSerial at RX and TX pin of ESP8266/NodeMCU
+SoftwareSerial s(0,1);
 
 #define FORWARD_ 0
 #define BACKWARD_ 2
@@ -56,9 +60,12 @@ Adafruit_MotorShield AFMS = Adafruit_MotorShield();
 // Or, create it with a different I2C address (say for stacking)
 // Adafruit_MotorShield AFMS = Adafruit_MotorShield(0x61);
 
-// Motor 4 -> left / Motor 2 -> right
-Adafruit_DCMotor *motorLeft = AFMS.getMotor(4);
-Adafruit_DCMotor *motorRight = AFMS.getMotor(2);
+// Motor 1 -> right behind / Motor 2 -> right front / Motor 3 -> left front / Motor 4 -> left behind
+Adafruit_DCMotor *motorRightBehind = AFMS.getMotor(1);
+Adafruit_DCMotor *motorRightFront = AFMS.getMotor(2);
+Adafruit_DCMotor *motorLeftFront = AFMS.getMotor(3);
+Adafruit_DCMotor *motorLeftBehind = AFMS.getMotor(4);
+
 
 class Explorer {
 
@@ -259,11 +266,13 @@ class Explorer {
     }
 
     void speedLeft(int motorSpeed) {
-      motorLeft->setSpeed(motorSpeed);
+      motorLeftFront->setSpeed(motorSpeed);
+      motorLeftBehind->setSpeed(motorSpeed);
     }
 
     void speedRight(int motorSpeed) {
-      motorRight->setSpeed(motorSpeed);
+      motorRightFront->setSpeed(motorSpeed);
+      motorRightBehind->setSpeed(motorSpeed);
     }
 
     /**
@@ -361,31 +370,40 @@ class Explorer {
     // Direction
     void forward() {
       // Wheels go forward
-      motorRight->run(FORWARD);
-      motorLeft->run(FORWARD);
+      motorLeftFront->run(BACKWARD);
+      motorRightFront->run(FORWARD);
+      motorLeftBehind->run(BACKWARD);
+      motorRightBehind->run(FORWARD);
     }
     void left() {
       // Wheels go left
-      motorLeft->run(BACKWARD);
-      motorRight->run(FORWARD);
+      motorLeftFront->run(FORWARD);
+      motorRightFront->run(FORWARD);
+      motorLeftBehind->run(FORWARD);
+      motorRightBehind->run(FORWARD);
     }
     void right() {
       // Wheels go right
-      motorLeft->run(FORWARD);
-      motorRight->run(BACKWARD);
+      motorLeftFront->run(BACKWARD);
+      motorRightFront->run(BACKWARD);
+      motorLeftBehind->run(BACKWARD);
+      motorRightBehind->run(BACKWARD);
     }
     void backward() {
       // Wheels go backward
-      motorRight->run(BACKWARD);
-      motorLeft->run(BACKWARD);
+      motorLeftFront->run(FORWARD);
+      motorRightFront->run(BACKWARD);
+      motorLeftBehind->run(FORWARD);
+      motorRightBehind->run(BACKWARD);
     }
 
     void stopmamene() {
-      motorLeft->run(RELEASE);
-      motorRight->run(RELEASE);
+      motorLeftFront->run(RELEASE);
+      motorLeftBehind->run(RELEASE);
+      motorRightFront->run(RELEASE);
+      motorRightBehind->run(RELEASE);
       for (int i = 0; i < 30000; i++) {}
     }
-
     /**
        Update the position of the robot given the distance travelled
        @param distance
@@ -454,22 +472,48 @@ class Explorer {
       if (this->angle < 0) this->angle += 360;
     }
 
+    //traduit x,y,angle,distances en JSON
+    String string_to_json(){
+      String res = "{ ";
+      res += "\"x\" : ;";
+      res += String(x);
+      res += ", \"y\" : ";
+      res += String(y);
+      res += ", \"angle\" : ";
+      res += String(angle);
+      res += ", \"distances\" : { \"0\" : ";
+      res += String(distances[0]);
+      res += ", \"1\" : ";
+      res += String(distances[1]);
+      res += ", \"2\" : ";
+      res += String(distances[2]);
+      res += ", \"3\" : ";
+      res += String(distances[3]);
+      res += ", \"4\" : ";
+      res += String(distances[4]);
+      res += ", \"5\" : ";
+      res += String(distances[5]);
+      res += " }";
+      res += " }";
+      return res;
+    }
+
 };
 
 Explorer* robot;
 boolean test;
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   AFMS.begin();
 
   robot = new Explorer(5.5, 1.55);
 
-  // Left wheel
-  motorLeft->setSpeed(motorSpeed);
+// Left wheels
+  robot->speedLeft(motorSpeed);
 
-  // Right wheel
-  motorRight->setSpeed(motorSpeed);
+  // Right wheels
+  robot->speedRight(motorSpeed);
 
   robot->stopmamene();
 
@@ -477,4 +521,9 @@ void setup() {
 
 void loop() {
   robot->explore();
+  String data = robot->string_to_json();
+  Serial.print(data);
+  Serial.print("test");
+  s.print(data);
+  s.write(123);
 }
