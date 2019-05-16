@@ -65,7 +65,7 @@ void loop() {
   if (client.connected()) {
     data = Serial.readString(); //Read the serial data and store it*
     Serial.println(data);
-    if(data != "") client.println(data);
+    if(data != "" || data != "\n") client.print(data);
     //client.println("hello from ESP8266");
   }
 

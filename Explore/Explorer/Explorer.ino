@@ -475,7 +475,7 @@ class Explorer {
     //traduit x,y,angle,distances en JSON
     String string_to_json(){
       String res = "{ ";
-      res += "\"x\" : ;";
+      res += "\"x\" : ";
       res += String(x);
       res += ", \"y\" : ";
       res += String(y);
@@ -523,7 +523,5 @@ void loop() {
   robot->explore();
   String data = robot->string_to_json();
   Serial.print(data);
-  Serial.print("test");
   s.print(data);
-  s.write(123);
 }

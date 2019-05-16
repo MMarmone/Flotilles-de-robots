@@ -2,31 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0f053ef3-94cf-46de-a7da-0a7651649a8f" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/../Explore/ArrayOfNode.ino" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../Explore/Explorer/Explorer.ino" beforeDir="false" afterPath="$PROJECT_DIR$/../Explore/Explorer/Explorer.ino" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Explore/Explorer/client_and_receive_message/WiFiClient/WiFiClient.ino" beforeDir="false" afterPath="$PROJECT_DIR$/../Explore/Explorer/client_and_receive_message/WiFiClient/WiFiClient.ino" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java_Server/wifi/.idea/compiler.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java_Server/wifi/.idea/description.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java_Server/wifi/.idea/encodings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java_Server/wifi/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java_Server/wifi/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java_Server/wifi/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java_Server/wifi/.idea/workspace.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java_Server/wifi/out/production/wifi/Serveur.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java_Server/wifi/src/Serveur.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java_Server/wifi/wifi.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Map_Creator/.idea/Map_Creator.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Map_Creator/.idea/encodings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Map_Creator/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Map_Creator/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Map_Creator/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Map_Creator/.idea/workspace.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Map_Creator/Explorer.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Map_Creator/Main.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Map_Creator/Map.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Map_Creator/MapGraphic.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Map_Creator/Node.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Map_Creator/Position.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Map_Creator/Zone.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Explore/Map.ino" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Explore/Node.ino" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Explore/Zone.ino" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -73,8 +54,10 @@
     <session id="-58388709">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
+          <entry key="project.closed" value="1" />
           <entry key="project.open.time.0" value="1" />
-          <entry key="project.opened" value="1" />
+          <entry key="project.open.time.9" value="1" />
+          <entry key="project.opened" value="2" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
@@ -103,8 +86,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="372">
-              <caret line="59" lean-forward="true" selection-start-line="59" selection-end-line="59" />
+            <state relative-caret-position="189">
+              <caret line="42" column="22" lean-forward="true" selection-start-line="42" selection-start-column="22" selection-end-line="42" selection-end-column="22" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -164,7 +147,7 @@
       <select />
     </treeState>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="-7" />
     <option name="width" value="1170" />
     <option name="height" value="1047" />
@@ -204,8 +187,8 @@
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
       <pane id="Scope" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -245,15 +228,14 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.14925373" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.15085287" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Designer" order="2" />
       <window_info id="Favorites" order="3" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.0835141" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.29826465" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -269,7 +251,7 @@
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="right" id="Palette&#9;" order="3" />
-      <window_info anchor="right" id="Maven Projects" order="4" visible="true" weight="0.32995737" />
+      <window_info active="true" anchor="right" id="Maven Projects" order="4" visible="true" weight="0.32995737" />
     </layout>
   </component>
   <component name="VcsContentAnnotationSettings">
@@ -292,8 +274,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="372">
-          <caret line="59" lean-forward="true" selection-start-line="59" selection-end-line="59" />
+        <state relative-caret-position="189">
+          <caret line="42" column="22" lean-forward="true" selection-start-line="42" selection-start-column="22" selection-end-line="42" selection-end-column="22" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
