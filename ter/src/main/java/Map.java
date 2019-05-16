@@ -139,7 +139,7 @@ public class Map {
      * @param xPos
      * @param yPos
      */
-    public void add(double xPos, double yPos){
+    public void add(double xPos, double yPos, int fromSensor){
         // Update information of the map if needed
         if(xPos > maxX) maxX = xPos;
         if(xPos < minX) minX = xPos;
@@ -156,7 +156,7 @@ public class Map {
 
         // Creating the position and the node
         Position position = zones.get(key).contains(xPos, yPos);
-        Node node = new Node(xPos, yPos);
+        Node node = new Node(xPos, yPos, fromSensor);
 
         // We see if the node is added or not
         boolean added = zones.get(key).add(LINK_RADIUS, ABSORBTION_RADIUS, node);
@@ -164,6 +164,10 @@ public class Map {
         // Add to the zone next to it, if needed
         if(added && position != Position.CENTER) createLink(position, xIndex, yIndex, node);
         if(added) nodes.add(node);
+    }
+
+    public void add(double xPos, double yPos){
+        this.add(xPos, yPos, -1);
     }
 
     /**
@@ -209,14 +213,14 @@ public class Map {
      * @param distance
      * @param method
      */
-    public void add(double xPos, double yPos, double robAngle, double angle, double distance, int method){
+    public void add(double xPos, double yPos, double robAngle, double angle, double distance, int fromSensor, int method){
         if(method == DEGREE) {
             angle = (angle + robAngle) % 360;
             angle = 3.141592654 * angle / 180;
         }
         double x = xPos + Math.cos(angle) * distance;
         double y = yPos + Math.sin(angle) * distance;
-        add(x, y);
+        add(x, y, fromSensor);
     }
 
     /**

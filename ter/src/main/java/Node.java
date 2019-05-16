@@ -5,6 +5,8 @@ public class Node {
     // Position of the node in space
     private double x, y;
     private int xIndex, yIndex;
+    // What's the sensor that added this point ? (debug)
+    private int fromSensor;
     // Set of nodes that have a link in (node -> this)
     private ArrayList<Node> in;
     // Set of nodes that have a link out (this -> node)
@@ -12,6 +14,11 @@ public class Node {
 
     // Constructor
     public Node(double x, double y){
+        this(x, y, -1);
+    }
+
+    public Node(double x, double y, int fromSensor){
+        this.fromSensor = fromSensor;
         this.x = x;
         this.y = y;
         this.in = new ArrayList<>();
@@ -135,4 +142,11 @@ public class Node {
         return squareDistance(node.getX(), node.getY());
     }
 
+    public int getFromSensor() {
+        return fromSensor;
+    }
+
+    public void setFromSensor(int fromSensor) {
+        this.fromSensor = fromSensor;
+    }
 }

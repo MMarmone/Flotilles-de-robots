@@ -16,6 +16,16 @@ public class MapGraphic extends JPanel {
     private final Color zone_border = Color.RED;
     private final Color zone_fill = Color.PINK;
 
+    // Color of the points depending on the sensor that added it *RAINBOW*
+    private final Color[] sensorColors = new Color[]{
+            Color.RED,
+            Color.ORANGE,
+            Color.YELLOW,
+            Color.GREEN,
+            Color.BLUE,
+            Color.MAGENTA
+    };
+
     // Size of a pixel in the map
     private final int PIXEL_SIZE = 3;
     private final int HALF_PIXEL = 1;
@@ -27,7 +37,6 @@ public class MapGraphic extends JPanel {
     private boolean drawLink;
     // Should we draw the zones ?
     private boolean drawZones;
-
 
     // Constructor
     public MapGraphic(Map map){
@@ -94,7 +103,16 @@ public class MapGraphic extends JPanel {
             for (Node node : nodes) {
                 int x = (int) (node.getxIndex() * RATIO) + PADDING;
                 int y = (int) (node.getyIndex() * RATIO) + PADDING;
+                // Change the color of the point depending on the sensor
+                if(node.getFromSensor() >= 0 && node.getFromSensor() < sensorColors.length) g.setColor(sensorColors[node.getFromSensor()]);
+                // Draw the point
                 g.fillRect(x-HALF_PIXEL, y-HALF_PIXEL, PIXEL_SIZE, PIXEL_SIZE);
+
+                // Add a thin black border to the point
+                g.setColor(color);
+                g.drawRect(x-HALF_PIXEL, y-HALF_PIXEL, PIXEL_SIZE, PIXEL_SIZE);
+
+                // Draw the link between nodes
                 if (drawLink) {
                     g.setColor(link_color);
                     for (Node out : node.getOut()) {
@@ -102,11 +120,9 @@ public class MapGraphic extends JPanel {
                         int y2 = (int) (out.getyIndex() * RATIO) + PADDING;
                         g.drawLine(x, y, x2, y2);
                     }
-                    g.setColor(color);
                 }
             }
         }
-
     }
 
 }
