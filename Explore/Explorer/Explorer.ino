@@ -11,19 +11,19 @@ SoftwareSerial s(0,1);
 #define RIGHT_ 1
 
 /* Ultrasonic sensors */
-const uint8_t echoPin_RIGHT = 12;  // echo signal (receives)
-const uint8_t echoPin_right = 10;
-const uint8_t echoPin_front_right = 8;
-const uint8_t echoPin_front_left = 6;
-const uint8_t echoPin_left = 4;
-const uint8_t echoPin_LEFT = 2;
+const uint8_t echoPin_RIGHT = 2;  // echo signal (receives)
+const uint8_t echoPin_right = 4;
+const uint8_t echoPin_front_right = 6;
+const uint8_t echoPin_front_left = 8;
+const uint8_t echoPin_left = 10;
+const uint8_t echoPin_LEFT = 12;
 
-const uint8_t trigPin_RIGHT = 13;  // trigger signal (sends)
-const uint8_t trigPin_right = 11;
-const uint8_t trigPin_front_right = 9;
-const uint8_t trigPin_front_left = 7;
-const uint8_t trigPin_left = 5;
-const uint8_t trigPin_LEFT = 3;
+const uint8_t trigPin_RIGHT = 3;  // trigger signal (sends)
+const uint8_t trigPin_right = 5;
+const uint8_t trigPin_front_right = 7;
+const uint8_t trigPin_front_left = 9;
+const uint8_t trigPin_left = 11;
+const uint8_t trigPin_LEFT = 13;
 
 
 /* Measurements */
@@ -61,10 +61,10 @@ Adafruit_MotorShield AFMS = Adafruit_MotorShield();
 // Adafruit_MotorShield AFMS = Adafruit_MotorShield(0x61);
 
 // Motor 1 -> right behind / Motor 2 -> right front / Motor 3 -> left front / Motor 4 -> left behind
-Adafruit_DCMotor *motorRightBehind = AFMS.getMotor(1);
-Adafruit_DCMotor *motorRightFront = AFMS.getMotor(2);
-Adafruit_DCMotor *motorLeftFront = AFMS.getMotor(3);
-Adafruit_DCMotor *motorLeftBehind = AFMS.getMotor(4);
+Adafruit_DCMotor *motorRightBehind = AFMS.getMotor(3);
+Adafruit_DCMotor *motorRightFront = AFMS.getMotor(4);
+Adafruit_DCMotor *motorLeftFront = AFMS.getMotor(1);
+Adafruit_DCMotor *motorLeftBehind = AFMS.getMotor(2);
 
 
 class Explorer {
@@ -527,4 +527,5 @@ void setup() {
 
 void loop() {
   robot->explore();
+  //robot->forward();
 }
