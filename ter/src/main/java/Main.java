@@ -18,21 +18,23 @@ public class Main {
      * @param data
      */
     private static void data(JSONObject data){
-        JSONObject distances = data.getJSONObject("distances");
-        double[] dist = new double[6];
-        double x, y, angle;
-        x = data.getDouble("x");
-        y = data.getDouble("y");
-        angle = data.getDouble("angle");
-        for(int i = 0; i < 6; i++) dist[i] = distances.getDouble(""+i);
+        if(data.has("x") && data.has("y") && data.has("angle") && data.has("distances")) {
+            JSONObject distances = data.getJSONObject("distances");
+            double[] dist = new double[6];
+            double x, y, angle;
+            x = data.getDouble("x");
+            y = data.getDouble("y");
+            angle = data.getDouble("angle");
+            for (int i = 0; i < 6; i++) dist[i] = distances.getDouble("" + i);
 
-        robot.setPos(x, y);
-        robot.setAngle(angle);
-        robot.setDistances(dist);
-        robot.addToTheMap(map);
+            robot.setPos(x, y);
+            robot.setAngle(angle);
+            robot.setDistances(dist);
+            robot.addToTheMap(map);
 
-        map.generateMap();
-        frame.repaint();
+            map.generateMap();
+            frame.repaint();
+        }
     }
 
 

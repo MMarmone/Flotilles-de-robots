@@ -59,9 +59,10 @@ public class Explorer {
      * @param map
      */
     void addToTheMap(Map map){
-        for(int i = 0; i < distances.length; i++){
+        /*for(int i = 0; i < distances.length; i++){
             if(distances[i] <= DRAW_DISTANCE && distances[i] > 0) map.add(x, y, angle, angles[i], distances[i]+sensors[i], i, Map.DEGREE);
-        }
+        }*/
+        map.add(x,y);
     }
 
 }

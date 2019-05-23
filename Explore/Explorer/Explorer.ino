@@ -95,7 +95,7 @@ class Explorer {
     // Tick needed per angle
     double TICK_PER_ANGLE;
     double ANGLE_PER_TICK;
-    // Tick per mm
+    // Tick per mm 
     double TICK_PER_MM;
     double MM_PER_TICK;
     /*********************************/
@@ -262,6 +262,9 @@ class Explorer {
         if (distances[i] <= SAFETY_DISTANCE) contact[i] = true;
         else contact[i] = false;
       }
+      String data = string_to_json();
+      Serial.print(data);
+      s.print(data);
 
     }
 
@@ -402,7 +405,8 @@ class Explorer {
       motorLeftBehind->run(RELEASE);
       motorRightFront->run(RELEASE);
       motorRightBehind->run(RELEASE);
-      for (int i = 0; i < 30000; i++) {}
+      delay(500);
+      //for (int i = 0; i < 100; i++) {}
     }
     /**
        Update the position of the robot given the distance travelled
@@ -517,11 +521,10 @@ void setup() {
 
   robot->stopmamene();
 
+  delay(5000);//on attends 5 sec la connexion au serveur
+
 }
 
 void loop() {
   robot->explore();
-  String data = robot->string_to_json();
-  Serial.print(data);
-  s.print(data);
 }
