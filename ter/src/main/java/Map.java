@@ -218,8 +218,8 @@ public class Map {
             angle = 3.141592654 * angle / 180;
             robAngle = 3.141592654 * robAngle / 180;
         }
-        double x = xPos + Math.cos(angle) * distance - Math.cos(robAngle) * sensor_dist;
-        double y = yPos + Math.sin(angle) * distance - Math.sin(robAngle) * sensor_dist;
+        double x = xPos + Math.cos(angle) * distance + Math.cos(robAngle) * sensor_dist;
+        double y = yPos + Math.sin(angle) * distance + Math.sin(robAngle) * sensor_dist;
         add(x, y, fromSensor);
     }
 

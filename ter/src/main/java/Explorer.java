@@ -5,7 +5,8 @@ public class Explorer {
      *********************************/
     // Angles of orientation of the sensors
     double[] angles;
-    double[] sensors;
+    double[] sensors_x;
+    double[] sensors_y;
 
     double DRAW_DISTANCE = 1000;
 
@@ -23,14 +24,18 @@ public class Explorer {
     /*********************************/
 
     Explorer(){
-        this(new double[]{-90, -30, 15, -15, 30, 90}, new double[]{75, 133, 143, 143, 133, 75});
+        this(
+                new double[]{-90, -30, 15, -15, 30, 90},
+                new double[]{75, 133, 143, 143, 133, 75},
+                new double[]{0, 0, 0, 0, 0, 0});
     }
 
     // Constructor
-    Explorer(double[] angles, double[] sensors){
+    Explorer(double[] angles, double[] sensors_x, double[] sensors_y){
         this.distances = new double[6];
         this.angles = angles;
-        this.sensors = sensors;
+        this.sensors_x = sensors_x;
+        this.sensors_y = sensors_y;
 
         // Starting position
         x = 0; y = 0;
@@ -56,7 +61,7 @@ public class Explorer {
 
     void addToTheMap(Map map){
         for(int i = 0; i < distances.length; i++){
-            if(distances[i] <= DRAW_DISTANCE && distances[i] > 0) map.add(x, y, angle, angles[i], distances[i], sensors[i], i, Map.DEGREE);
+            if(distances[i] <= DRAW_DISTANCE && distances[i] > 0) map.add(x, y, angle, angles[i], distances[i] + sensors_x[i], sensors_y[i], i, Map.DEGREE);
         }
     }
 
