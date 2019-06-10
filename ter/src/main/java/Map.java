@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 
 public class Map {
@@ -213,13 +212,14 @@ public class Map {
      * @param distance
      * @param method
      */
-    public void add(double xPos, double yPos, double robAngle, double angle, double distance, int fromSensor, int method){
+    public void add(double xPos, double yPos, double robAngle, double angle, double distance, double sensor_dist, int fromSensor, int method){
         if(method == DEGREE) {
             angle = (angle + robAngle) % 360;
             angle = 3.141592654 * angle / 180;
+            robAngle = 3.141592654 * robAngle / 180;
         }
-        double x = xPos + Math.cos(angle) * distance;
-        double y = yPos + Math.sin(angle) * distance;
+        double x = xPos + Math.cos(angle) * distance - Math.cos(robAngle) * sensor_dist;
+        double y = yPos + Math.sin(angle) * distance - Math.sin(robAngle) * sensor_dist;
         add(x, y, fromSensor);
     }
 

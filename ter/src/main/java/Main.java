@@ -5,13 +5,10 @@ import java.io.*;
 import java.net.*;
 
 public class Main {
-    static final int port = 8080;
-
     private static Map map;
     private static MapGraphic map2D;
     private static JFrame frame;
     private static Explorer robot;
-    private static BufferedInputStream reader;
 
     /**
      * Ajoute les données à la map
@@ -37,18 +34,9 @@ public class Main {
         }
     }
 
-
-    private static String listen() throws IOException {
-        int stream;
-        byte[] b = new byte[16384];
-        stream = reader.read(b);
-        return new String(b, 0, stream);
-    }
-
-    public static void main(String[] args) throws Exception {
-        ServerSocket s = new ServerSocket(port);
-        Socket soc = s.accept();
-        reader = new BufferedInputStream(soc.getInputStream());
+    public static void main(String[] args) {
+        Server server = new Server(8080, 1);
+        server.accept();
         JSONObject json;
 
         map = new Map(500,500);
@@ -62,20 +50,13 @@ public class Main {
 
         robot = new Explorer();
 
-
-        while (true) {
-            String str = listen();
-            System.out.println("STR = " + str);
-            // Fin du parcours
-            if (str.equals("END")) break;
-            // Si la ligne n'est pas vide
-            if(!str.isEmpty() && !str.equals("")) {
-                json = new JSONObject(str);
+        while (!server.finished()) {
+            int speaker = server.listen();
+            while (server.unreadMessage(speaker)){
+                json = server.getLastMessage(speaker);
+                System.out.println("STR = " + json.toString());
                 data(json);
             }
         }
-
-        reader.close();
-        soc.close();
     }
 }
