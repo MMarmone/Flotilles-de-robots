@@ -8,7 +8,7 @@ public class Explorer {
     double[] sensors_x;
     double[] sensors_y;
 
-    double DRAW_DISTANCE = 1000;
+    double DRAW_DISTANCE = 400;
 
     /*********************************/
 
@@ -26,7 +26,7 @@ public class Explorer {
     Explorer(){
         this(
                 new double[]{-90, -30, 15, -15, 30, 90},
-                new double[]{75, 133, 143, 143, 133, 75},
+                new double[]{75, 130, 143, 143, 130, 75},
                 new double[]{0, 0, 0, 0, 0, 0});
     }
 
@@ -61,8 +61,9 @@ public class Explorer {
 
     void addToTheMap(Map map){
         for(int i = 0; i < distances.length; i++){
-            if(distances[i] <= DRAW_DISTANCE && distances[i] > 0) map.add(x, y, angle, angles[i], distances[i] + sensors_x[i], sensors_y[i], i, Map.DEGREE);
+            if(i != 2 && i != 3 && distances[i] <= DRAW_DISTANCE && distances[i] > 0) map.add(x, y, angle, angles[i], distances[i] + sensors_x[i], sensors_y[i], i, Map.DEGREE);
         }
+        map.add(x, y, angle, 0, 0, 0, -1, Map.DEGREE);
     }
 
 }

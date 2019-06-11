@@ -79,13 +79,12 @@ class Explorer {
     // Angles of orientation of the sensors
     double angles[6] = { -90, -45, 20, -20, 45, 90};
     // Safety distance in mm
-    int SAFETY_DISTANCE = 100;
-    // Max distance at which we add a point to the map (in mm)
-    int DRAW_DISTANCE = 400;
+    int SAFETY_DISTANCE = 60;
+
     // Error margin when moving along an object (in mm)
     int ERROR_MARGIN = 30;
     // Distance at which we will move along an object (in mm)
-    int FOLLOW_DISTANCE = 160;
+    int FOLLOW_DISTANCE = 90;
     // Speed of the wheels
     int DEFAULT_SPEED = 100;
 
@@ -319,10 +318,10 @@ class Explorer {
        Move the robot to follow an object on a certain side
     */
     void follow() {
-
-      if(contact[UP_RIGHT] || contact[UP_LEFT]){
-        if(FOLLOWING_SIDE == FAR_RIGHT) left(20);
-        else right(20);
+      // On tourne de 20 degré quand y'a un truc devant
+      if(contact[UP_RIGHT] || contact[UP_LEFT] || contact[RIGHT] || contact[LEFT]){
+        if(FOLLOWING_SIDE == FAR_RIGHT) left(10);
+        else right(10);
         updateDistance();
       }
 
@@ -338,22 +337,17 @@ class Explorer {
           if (FOLLOWING_SIDE == FAR_LEFT && distances[FOLLOWING_SIDE] > prev_distances[FOLLOWING_SIDE]) left(10);
           updateDistance();
         }
-        if (!contact[UP_RIGHT] && !contact[UP_LEFT]) forward(30);
+        if (!contact[UP_RIGHT] && !contact[UP_LEFT] && !contact[LEFT] && !contact[RIGHT]) forward(30);
         else backward(50);
       }
       else {
         // If there is no more something at the side, we try to turn and go forward
         int cpt = 0;
-        
-        while (!isThereSomething(FOLLOWING_SIDE, FOLLOW_DISTANCE + ERROR_MARGIN) && cpt < 6) {
-
-          if(contact[UP_RIGHT] || contact[UP_LEFT] || contact[LEFT] || contact[RIGHT]){
-            break;
-          }
-          
-          forward(40);
-          if (FOLLOWING_SIDE == FAR_RIGHT) right(30);
-          else if (FOLLOWING_SIDE == FAR_LEFT) left(30);
+        while (!isThereSomething(FOLLOWING_SIDE, FOLLOW_DISTANCE + ERROR_MARGIN) && cpt < 12) {
+          if(contact[UP_RIGHT] || contact[UP_LEFT] || contact[LEFT] || contact[RIGHT] || contact[FAR_RIGHT] || contact[FAR_LEFT]) break;
+          if (FOLLOWING_SIDE == FAR_RIGHT) right(10);
+          else if (FOLLOWING_SIDE == FAR_LEFT) left(10);
+          forward(30);
           updateDistance();
           cpt++;
         }
@@ -498,7 +492,7 @@ class Explorer {
       res += ", \"5\" : ";
       res += String(distances[5]);
       res += " }";
-      res += " }";
+      res += " };";
       return res;
     }
 
@@ -511,21 +505,23 @@ void setup() {
   Serial.begin(115200);
   AFMS.begin();
 
-  robot = new Explorer(5.5, 1.55);
+  robot = new Explorer(1.89, 0.57);
 
 // Left wheels
-  robot->speedLeft(motorSpeed);
+  robot->speedLeft(motorSpeed*1.1);
 
   // Right wheels
   robot->speedRight(motorSpeed);
 
   robot->stopmamene();
 
-  delay(5000);//on attends 5 sec la connexion au serveur
-
+  delay(1000); //on attends 5 sec la connexion au serveur
 }
 
 void loop() {
   robot->explore();
+  Serial.print("Reading data...");
+  String data = Serial.readStringUntil(';');
+  Serial.println("Data: " + data);
   //robot->forward();
 }

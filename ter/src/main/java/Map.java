@@ -10,9 +10,9 @@ public class Map {
     public static final int RADIAN = 0, DEGREE = 1;
 
     // Define at which distance a node get absorbed (in mm).
-    public static final double ABSORBTION_RADIUS = 4;
+    public static final double ABSORBTION_RADIUS = 20;
     // Define at which distance 2 nodes are linked (in mm).
-    public static final double LINK_RADIUS = 8;
+    public static final double LINK_RADIUS = 40;
 
     // Define the scale of the map created (default : 1/8).
     private static final double RATIO = 1;

@@ -6,6 +6,10 @@
 #include <ESP8266WiFi.h>
 #include<SoftwareSerial.h> //Included SoftwareSerial Library
 //Started SoftwareSerial at RX and TX pin of ESP8266/NodeMCU
+#include <string.h>
+#include<SoftwareSerial.h> //Included SoftwareSerial Library
+//Started SoftwareSerial at RX and TX pin of ESP8266/NodeMCU
+SoftwareSerial s(3,1);
 
 
 #ifndef STASSID
@@ -61,17 +65,19 @@ void loop() {
   // Use WiFiClient class to create TCP connections
   if (first_time && !client.connect(host, port)) {
     Serial.println("connection failed");
-    delay(5000);
+    delay(1000);
     return;
   }
   first_time = false;
+  
   // This will send a string to the server
-  Serial.println("sending data to server");
   if (client.connected()) {
-    data = Serial.readString(); //Read the serial data and store it*
-    Serial.println(data);
-    if(data != "" || data != "\n") client.print(data);
-    //client.println("hello from ESP8266");
+    Serial.print("Reading data...");
+    data = Serial.readStringUntil(';'); //Read the serial data and store it*
+    if(data != "" || data != "\n") {
+      Serial.println("Data sent : " + data);
+      client.println(data);
+    } else Serial.println("No data");
   }
 
   // wait for data to be available
@@ -86,11 +92,12 @@ void loop() {
   }*/
 
   // Read all the lines of the reply from server and print them to Serial
-  Serial.println("receiving from remote server");
   // not testing 'client.connected()' since we do not need to send data here
   while (client.available()) {
-    char ch = static_cast<char>(client.read());
-    Serial.print(ch);
+    Serial.println("receiving from remote server");
+    String data = client.readStringUntil(';');
+    Serial.println("sending data");
+    s.print(data);
   }
 
   // Close the connection

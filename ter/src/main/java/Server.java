@@ -23,6 +23,7 @@ public class Server {
     private boolean[] finished;
 
     private boolean PRINT_MESSAGE;
+    private final int MAX_MESSAGE = 100;
 
     public Server(int port, int capacity){
         this.capacity = capacity;
@@ -35,7 +36,7 @@ public class Server {
         this.readers = new BufferedReader[capacity];
         this.writers = new PrintWriter[capacity];
         this.robots = new Socket[capacity];
-        this.messages = new JSONObject[capacity][10];
+        this.messages = new JSONObject[capacity][MAX_MESSAGE];
         this.nMessage = new int[capacity];
         this.finished = new boolean[capacity];
         for(int i = 0; i < capacity; i++) finished[i] = false;
@@ -52,10 +53,11 @@ public class Server {
     public void accept(){
         while(nRobots < capacity){
             try {
-                robots[capacity] = server.accept();
-                readers[capacity] = new BufferedReader(new InputStreamReader(robots[capacity].getInputStream()));
-                writers[capacity] = new PrintWriter(robots[capacity].getOutputStream(), true);
-                capacity++;
+                robots[nRobots] = server.accept();
+                if(PRINT_MESSAGE) System.out.println("Nouveau robot");
+                readers[nRobots] = new BufferedReader(new InputStreamReader(robots[nRobots].getInputStream()));
+                writers[nRobots] = new PrintWriter(robots[nRobots].getOutputStream(), true);
+                nRobots++;
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -126,7 +128,7 @@ public class Server {
                 if(splitted[i].equals("END")) close(robot);
                 else {
                     json = new JSONObject(splitted[i]);
-                    if(nMessage[robot] < 10) messages[robot][nMessage[robot]++] = json;
+                    if(nMessage[robot] < MAX_MESSAGE) messages[robot][nMessage[robot]++] = json;
                 }
             } catch (JSONException e){
                 // pass

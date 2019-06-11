@@ -28,17 +28,10 @@ public class Main {
             robot.setAngle(angle);
             robot.setDistances(dist);
             robot.addToTheMap(map);
-
-            map.generateMap();
-            frame.repaint();
         }
     }
 
     public static void main(String[] args) {
-        Server server = new Server(8080, 1);
-        server.accept();
-        JSONObject json;
-
         map = new Map(500,500);
         frame = new JFrame("TER MAP");
         map2D = new MapGraphic(map, true);
@@ -50,13 +43,20 @@ public class Main {
 
         robot = new Explorer();
 
+        Server server = new Server(8080, 1);
+        server.enablePrinting();
+        server.accept();
+        server.send(0,"cc sa va;");
+        JSONObject json;
+
         while (!server.finished()) {
             int speaker = server.listen();
             while (server.unreadMessage(speaker)){
                 json = server.getLastMessage(speaker);
-                System.out.println("STR = " + json.toString());
                 data(json);
             }
+            map.generateMap();
+            frame.repaint();
         }
     }
 }
