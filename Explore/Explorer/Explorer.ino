@@ -288,7 +288,14 @@ class Explorer {
 
       if (FOLLOWING_SIDE == -1) find_();
       else if(memory->isVisited(x, y, total_distance)) follow();
-      else FOLLOWING_SIDE = -1;
+      else {
+         // On a fini de visiter, on se tourne et on continue l'exploration
+         for(int i = 0; i < 9; i++){
+            if(FOLLOWING_SIDE == FAR_RIGHT) left(10);
+            else right(10);
+         }
+         FOLLOWING_SIDE = -1;
+      }
     }
 
     /**
