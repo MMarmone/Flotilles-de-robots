@@ -121,6 +121,8 @@ class Explorer {
     // Which side do we follow ? (-1 is none)
     int FOLLOWING_SIDE = -1;
     int OLD_FOLLOWING_SIDE = FAR_RIGHT;
+    Memory* memory;
+    double total_distance;
     /*********************************/
 
     // Constructor
@@ -140,6 +142,7 @@ class Explorer {
       // Starting position
       x = 0; y = 0;
       angle = 0;
+      total_distance = 0;
 
       FOLLOWING_SIDE = -1;
     }
@@ -284,7 +287,8 @@ class Explorer {
       updateDistance();
 
       if (FOLLOWING_SIDE == -1) find_();
-      else follow();
+      else if(memory->isVisited(x, y, total_distance)) follow();
+      else FOLLOWING_SIDE = -1;
     }
 
     /**
@@ -292,9 +296,18 @@ class Explorer {
     */
     void find_() {
       // If we're alongside an object on our left or right
-      if (distances[OLD_FOLLOWING_SIDE] <= FOLLOW_DISTANCE + ERROR_MARGIN) FOLLOWING_SIDE = OLD_FOLLOWING_SIDE;
-      else if (distances[FAR_LEFT] <= FOLLOW_DISTANCE + ERROR_MARGIN) FOLLOWING_SIDE = FAR_LEFT;
-      else if (distances[FAR_RIGHT] <= FOLLOW_DISTANCE + ERROR_MARGIN) FOLLOWING_SIDE = FAR_RIGHT;
+      if (distances[OLD_FOLLOWING_SIDE] <= FOLLOW_DISTANCE + ERROR_MARGIN) {
+         FOLLOWING_SIDE = OLD_FOLLOWING_SIDE;
+         memory = new Memory(FOLLOWING_SIDE);
+      }
+      else if (distances[FAR_LEFT] <= FOLLOW_DISTANCE + ERROR_MARGIN){
+         FOLLOWING_SIDE = FAR_LEFT;
+         memory = new Memory(FOLLOWING_SIDE);
+      }
+      else if (distances[FAR_RIGHT] <= FOLLOW_DISTANCE + ERROR_MARGIN) {
+         FOLLOWING_SIDE = FAR_RIGHT;
+         memory = new Memory(FOLLOWING_SIDE);
+      }
       else {
         int cpt = 0;
         // Nothing ahead, go forward
@@ -318,6 +331,9 @@ class Explorer {
        Move the robot to follow an object on a certain side
     */
     void follow() {
+      // Si ça fait un moment qu'on a pas ajouté de points, alors on en ajoute un
+      if(memory->distanceSinceLastPoint(total_distance) >= 200) memory->addMemoryPoint(x, y, total_distance);
+       
       // On tourne de 20 degré quand y'a un truc devant
       if(contact[UP_RIGHT] || contact[UP_LEFT] || contact[RIGHT] || contact[LEFT]){
         if(FOLLOWING_SIDE == FAR_RIGHT) left(10);
@@ -338,7 +354,7 @@ class Explorer {
           updateDistance();
         }
         if (!contact[UP_RIGHT] && !contact[UP_LEFT] && !contact[LEFT] && !contact[RIGHT]) forward(30);
-        else backward(50);
+        else backward(30);
       }
       else {
         // If there is no more something at the side, we try to turn and go forward
@@ -407,6 +423,7 @@ class Explorer {
        @param distance
     */
     void updatePos(double distance) {
+      total_distance += distance;
       double angle = 3.141592654 * this->angle / 180;
       x += cos(angle) * distance;
       y += sin(angle) * distance;
@@ -418,9 +435,9 @@ class Explorer {
     */
     void forward(int distance) {
       for (int i = 0; i < distance * TICK_PER_MM; i++) {
-        updatePos(MM_PER_TICK);
         forward();
       }
+      updatePos(distance);
       stopmamene();
     }
 
@@ -430,9 +447,9 @@ class Explorer {
     */
     void left(int angle) {
       for (int i = 0; i < angle * TICK_PER_ANGLE; i++) {
-        addAngle(-ANGLE_PER_TICK);
         left();
       }
+      addAngle(-angle);
       stopmamene();
     }
 
@@ -442,9 +459,9 @@ class Explorer {
     */
     void right(int angle) {
       for (int i = 0; i < angle * TICK_PER_ANGLE; i++) {
-        addAngle(ANGLE_PER_TICK);
         right();
       }
+      addAngle(angle);
       stopmamene();
     }
 
@@ -454,9 +471,9 @@ class Explorer {
     */
     void backward(int distance) {
       for (int i = 0; i < distance * TICK_PER_MM; i++) {
-        updatePos(-MM_PER_TICK);
         backward();
       }
+      updatePos(-distance);
       stopmamene();
     }
 
