@@ -7,13 +7,13 @@
 #include<SoftwareSerial.h> //Included SoftwareSerial Library
 //Started SoftwareSerial at RX and TX pin of ESP8266/NodeMCU
 #include <string.h>
-#include<SoftwareSerial.h> //Included SoftwareSerial Library
+//#include<SoftwareSerial.h> //Included SoftwareSerial Library
 //Started SoftwareSerial at RX and TX pin of ESP8266/NodeMCU
-SoftwareSerial s(3,1);
+//SoftwareSerial s(3,1);
 
 
 #ifndef STASSID
-#define STASSID "jon snow est mort ep5 s8"
+#define STASSID "jon snow est mort s5 ep8"
 #define STAPSK  "azerty2a"
 #endif
 
@@ -93,12 +93,12 @@ void loop() {
 
   // Read all the lines of the reply from server and print them to Serial
   // not testing 'client.connected()' since we do not need to send data here
-  while (client.available()) {
+  /*while (client.available()) {
     Serial.println("receiving from remote server");
     String data = client.readStringUntil(';');
     Serial.println("sending data");
     s.print(data);
-  }
+  }*/
 
   // Close the connection
   /*Serial.println();

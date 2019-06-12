@@ -520,8 +520,8 @@ void setup() {
 
 void loop() {
   robot->explore();
-  Serial.print("Reading data...");
+  /*Serial.print("Reading data...");
   String data = Serial.readStringUntil(';');
-  Serial.println("Data: " + data);
+  Serial.println("Data: " + data);*/
   //robot->forward();
 }
