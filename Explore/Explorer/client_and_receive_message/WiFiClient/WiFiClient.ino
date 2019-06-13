@@ -13,15 +13,15 @@
 
 
 #ifndef STASSID
-#define STASSID "jon snow est mort s5 ep8"
-#define STAPSK  "azerty2a"
+#define STASSID "SFR-7e88"
+#define STAPSK  "DU91LAZVQLYG"
 #endif
 
 
 const char* ssid     = STASSID;
 const char* password = STAPSK;
 
-const char* host = "192.168.43.170";
+const char* host = "192.168.0.17";
 const uint16_t port = 8080;
 
 boolean first_time = true;

@@ -1,6 +1,6 @@
+#include <math.h>
 #include <Adafruit_MotorShield.h>
 #include <string.h>
-#include "Memory.cpp"
 #include<SoftwareSerial.h> //Included SoftwareSerial Library
 //Started SoftwareSerial at RX and TX pin of ESP8266/NodeMCU
 SoftwareSerial s(0,1);
@@ -67,6 +67,131 @@ Adafruit_DCMotor *motorLeftFront = AFMS.getMotor(1);
 Adafruit_DCMotor *motorLeftBehind = AFMS.getMotor(2);
 
 
+class Node {
+  private :
+    int g;
+    int f;
+    int h;
+    int row;
+    int col;
+    bool is_block;
+    Node* parent;
+
+  public:
+
+    Node(int row, int col){
+      this->row = row;
+      this->col = col;
+    }
+    
+    void calculateHeuristic(Node* finalNode) {
+        this->h = abs(finalNode->getRow() - getRow()) + abs(finalNode->getCol() - getCol());
+    }
+
+    void setNodeData(Node* currentNode, int cost) {
+        int gCost = currentNode->getG() + cost;
+        setParent(currentNode);
+        setG(gCost);
+        calculateFinalCost();
+    }
+
+    bool checkBetterPath(Node* currentNode, int cost) {
+        int gCost = currentNode->getG() + cost;
+        if (gCost < getG()) {
+            setNodeData(currentNode, cost);
+            return true;
+        }
+        return false;
+    }
+
+    void calculateFinalCost() {
+        int finalCost = getG() + getH();
+        setF(finalCost);
+    }
+
+    bool equals(Node* other) {
+        return this->getRow() == other->getRow() && this->getCol() == other->getCol();
+    }
+
+    String toString() {
+        return "Node [row=" + String(row) + ", col=" + String(col) + "]";
+    }
+
+    int getH() {
+        return h;
+    }
+
+    void setH(int h) {
+        this->h = h;
+    }
+
+    int getG() {
+        return g;
+    }
+
+    void setG(int g) {
+        this->g = g;
+    }
+
+    int getF() {
+        return f;
+    }
+
+    void setF(int f) {
+        this->f = f;
+    }
+
+    Node* getParent() {
+        return parent;
+    }
+
+    void setParent(Node* parent) {
+        this->parent = parent;
+    }
+
+    bool isBlock() {
+        return is_block;
+    }
+
+    void setBlock(boolean is_block) {
+        this->is_block = is_block;
+    }
+
+    int getRow() {
+        return row;
+    }
+
+    void setRow(int row) {
+        this->row = row;
+    }
+
+    int getCol() {
+        return col;
+    }
+
+    void setCol(int col) {
+        this->col = col;
+    }
+};
+
+/*
+class AStar{
+  private:
+    static int DEFAULT_HV_COST = 10; // Horizontal - Vertical Cost
+    static int DEFAULT_DIAGONAL_COST = 14;
+    int hvCost;
+    int diagonalCost;
+    Node[][] searchArea;
+    Queue openList;
+    Set<Node> closedSet;
+    Node* initialNode;
+    Node* finalNode;
+
+  public:
+
+}
+*/
+
 class Explorer {
 
   public:
@@ -121,8 +246,6 @@ class Explorer {
     // Which side do we follow ? (-1 is none)
     int FOLLOWING_SIDE = -1;
     int OLD_FOLLOWING_SIDE = FAR_RIGHT;
-    Memory* memory;
-    double total_distance;
     /*********************************/
 
     // Constructor
@@ -142,7 +265,6 @@ class Explorer {
       // Starting position
       x = 0; y = 0;
       angle = 0;
-      total_distance = 0;
 
       FOLLOWING_SIDE = -1;
     }
@@ -287,15 +409,7 @@ class Explorer {
       updateDistance();
 
       if (FOLLOWING_SIDE == -1) find_();
-      else if(!memory->isVisited(x, y, total_distance)) follow();
-      else {
-         // On a fini de visiter, on se tourne et on continue l'exploration
-         for(int i = 0; i < 9; i++){
-            if(FOLLOWING_SIDE == FAR_RIGHT) left(10);
-            else right(10);
-         }
-         FOLLOWING_SIDE = -1;
-      }
+      else follow();
     }
 
     /**
@@ -303,18 +417,9 @@ class Explorer {
     */
     void find_() {
       // If we're alongside an object on our left or right
-      if (distances[OLD_FOLLOWING_SIDE] <= FOLLOW_DISTANCE + ERROR_MARGIN) {
-         FOLLOWING_SIDE = OLD_FOLLOWING_SIDE;
-         memory = new Memory(FOLLOWING_SIDE);
-      }
-      else if (distances[FAR_LEFT] <= FOLLOW_DISTANCE + ERROR_MARGIN){
-         FOLLOWING_SIDE = FAR_LEFT;
-         memory = new Memory(FOLLOWING_SIDE);
-      }
-      else if (distances[FAR_RIGHT] <= FOLLOW_DISTANCE + ERROR_MARGIN) {
-         FOLLOWING_SIDE = FAR_RIGHT;
-         memory = new Memory(FOLLOWING_SIDE);
-      }
+      if (distances[OLD_FOLLOWING_SIDE] <= FOLLOW_DISTANCE + ERROR_MARGIN) FOLLOWING_SIDE = OLD_FOLLOWING_SIDE;
+      else if (distances[FAR_LEFT] <= FOLLOW_DISTANCE + ERROR_MARGIN) FOLLOWING_SIDE = FAR_LEFT;
+      else if (distances[FAR_RIGHT] <= FOLLOW_DISTANCE + ERROR_MARGIN) FOLLOWING_SIDE = FAR_RIGHT;
       else {
         int cpt = 0;
         // Nothing ahead, go forward
@@ -338,9 +443,6 @@ class Explorer {
        Move the robot to follow an object on a certain side
     */
     void follow() {
-      // Si ça fait un moment qu'on a pas ajouté de points, alors on en ajoute un
-      if(memory->distanceSinceLastPoint(total_distance) >= 200) memory->addMemoryPoint(x, y, total_distance);
-       
       // On tourne de 20 degré quand y'a un truc devant
       if(contact[UP_RIGHT] || contact[UP_LEFT] || contact[RIGHT] || contact[LEFT]){
         if(FOLLOWING_SIDE == FAR_RIGHT) left(10);
@@ -361,7 +463,7 @@ class Explorer {
           updateDistance();
         }
         if (!contact[UP_RIGHT] && !contact[UP_LEFT] && !contact[LEFT] && !contact[RIGHT]) forward(30);
-        else backward(30);
+        else backward(50);
       }
       else {
         // If there is no more something at the side, we try to turn and go forward
@@ -430,7 +532,6 @@ class Explorer {
        @param distance
     */
     void updatePos(double distance) {
-      total_distance += distance;
       double angle = 3.141592654 * this->angle / 180;
       x += cos(angle) * distance;
       y += sin(angle) * distance;
@@ -442,9 +543,9 @@ class Explorer {
     */
     void forward(int distance) {
       for (int i = 0; i < distance * TICK_PER_MM; i++) {
+        updatePos(MM_PER_TICK);
         forward();
       }
-      updatePos(distance);
       stopmamene();
     }
 
@@ -454,9 +555,9 @@ class Explorer {
     */
     void left(int angle) {
       for (int i = 0; i < angle * TICK_PER_ANGLE; i++) {
+        addAngle(-ANGLE_PER_TICK);
         left();
       }
-      addAngle(-angle);
       stopmamene();
     }
 
@@ -466,9 +567,9 @@ class Explorer {
     */
     void right(int angle) {
       for (int i = 0; i < angle * TICK_PER_ANGLE; i++) {
+        addAngle(ANGLE_PER_TICK);
         right();
       }
-      addAngle(angle);
       stopmamene();
     }
 
@@ -478,9 +579,9 @@ class Explorer {
     */
     void backward(int distance) {
       for (int i = 0; i < distance * TICK_PER_MM; i++) {
+        updatePos(-MM_PER_TICK);
         backward();
       }
-      updatePos(-distance);
       stopmamene();
     }
 
@@ -529,7 +630,7 @@ void setup() {
   Serial.begin(115200);
   AFMS.begin();
 
-  robot = new Explorer(1.80, 0.62);
+  robot = new Explorer(1.89, 0.57);
 
 // Left wheels
   robot->speedLeft(motorSpeed*1.1);
@@ -540,13 +641,6 @@ void setup() {
   robot->stopmamene();
 
   delay(1000); //on attends 5 sec la connexion au serveur
-  //robot->left(90);
-  /*int i;
-  for(i=0;i < 10; i++){
-    //robot->left(10);
-    robot->forward(30);
-  }
-  //robot->forward(10);*/
 }
 
 void loop() {
@@ -554,5 +648,5 @@ void loop() {
   /*Serial.print("Reading data...");
   String data = Serial.readStringUntil(';');
   Serial.println("Data: " + data);*/
-  
+  //robot->forward();
 }

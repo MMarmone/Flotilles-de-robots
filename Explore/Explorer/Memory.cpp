@@ -1,8 +1,10 @@
+#include <math.h>
+
 class Memory{
   private:
     int CAPACITY = 10;
     double RADIUS = 25; // (in mm)
-    double MINIMUM_DISTANCE = 30; // (in mm)
+    double MINIMUM_DISTANCE = 100; // (in mm)
     double *mem_x, *mem_y, *mem_d;
     bool CLOSED = false;
     int SIZE = 0;
@@ -44,7 +46,7 @@ class Memory{
         // Si on a parcouru assez de distance depuis l'ajout du point
         if(distance - mem_d[i] > MINIMUM_DISTANCE){
           // On regarde s'il se situe dans une certaine zone autour du point
-          if(x >= mem_x[i] - RADIUS && x <= mem_x[i] + RADIUS && y >= mem_y[i] - RADIUS && y <= mem_y[i] + RADIUS) {
+          if(sqrt((x-mem_x[i])*(x-mem_x[i])+(y-mem_y[i])*(y-mem_y[i])) <= RADIUS) {
             CLOSED = true;
             return true;
           }
