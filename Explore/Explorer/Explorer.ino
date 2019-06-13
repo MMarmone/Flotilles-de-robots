@@ -306,15 +306,18 @@ class Explorer {
       // If we're alongside an object on our left or right
       if (distances[OLD_FOLLOWING_SIDE] <= FOLLOW_DISTANCE + ERROR_MARGIN) {
          FOLLOWING_SIDE = OLD_FOLLOWING_SIDE;
-         memory = new Memory(FOLLOWING_SIDE);
+         memory->eraseMemory();
+         memory->setFollowingSide(FOLLOWING_SIDE);
       }
       else if (distances[FAR_LEFT] <= FOLLOW_DISTANCE + ERROR_MARGIN){
          FOLLOWING_SIDE = FAR_LEFT;
-         memory = new Memory(FOLLOWING_SIDE);
+         memory->eraseMemory();
+         memory->setFollowingSide(FOLLOWING_SIDE);
       }
       else if (distances[FAR_RIGHT] <= FOLLOW_DISTANCE + ERROR_MARGIN) {
          FOLLOWING_SIDE = FAR_RIGHT;
-         memory = new Memory(FOLLOWING_SIDE);
+         memory->eraseMemory();
+         memory->setFollowingSide(FOLLOWING_SIDE);
       }
       else {
         int cpt = 0;
