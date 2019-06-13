@@ -46,6 +46,9 @@ class Memory{
       SIZE = 0;
     }
 
+    void setFollowingSide(int side){
+      FOLLOWING_SIDE = side;
+    }
 
     // Distance à laquelle a été ajoutée le dernier point
     double getLastDistance(){
