@@ -1,5 +1,3 @@
-#include <math.h>
-
 class Memory{
   private:
     int CAPACITY = 10;
@@ -20,19 +18,8 @@ class Memory{
 
     // Ajoute un point à la mémoire
     void addMemoryPoint(double x, double y, double distance){
-      // Si la taille de la mémoire est trop petite, on double 
-      if(SIZE >= CAPACITY){
-        CAPACITY += CAPACITY;
-        double *nMemX = new double[CAPACITY], *nMemY = new double[CAPACITY], *nMemD = new double[CAPACITY];
-        for(int i = 0; i < SIZE; i++){
-          nMemX[i] = mem_x[i];
-          nMemY[i] = mem_y[i];
-          nMemD[i] = mem_d[i];
-        }
-        mem_x = nMemX;
-        mem_y = nMemY;
-        mem_d = nMemD;
-      }
+      // Si on a plus assez de place, on ajoute rien
+      if(SIZE >= CAPACITY) return;
 
       // On ajoute le point
       mem_x[SIZE] = x;
@@ -46,13 +33,17 @@ class Memory{
         // Si on a parcouru assez de distance depuis l'ajout du point
         if(distance - mem_d[i] > MINIMUM_DISTANCE){
           // On regarde s'il se situe dans une certaine zone autour du point
-          if(sqrt((x-mem_x[i])*(x-mem_x[i])+(y-mem_y[i])*(y-mem_y[i])) <= RADIUS) {
+          if(x >= mem_x[i] - RADIUS && x <= mem_x[i] + RADIUS && y >= mem_y[i] - RADIUS && y <= mem_y[i] + RADIUS) {
             CLOSED = true;
             return true;
           }
         }
       }
       return false;
+    }
+  
+    void eraseMemory(){
+      SIZE = 0;
     }
 
 
