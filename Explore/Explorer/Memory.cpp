@@ -3,8 +3,8 @@ class Memory{
     int CAPACITY = 10;
     double RADIUS = 25; // (in mm)
     double MINIMUM_DISTANCE = 30; // (in mm)
-    double* mem_x, mem_y, mem_d;
-    boolean CLOSED = false;
+    double *mem_x, *mem_y, *mem_d;
+    bool CLOSED = false;
     int SIZE = 0;
     int FOLLOWING_SIDE;
 
@@ -21,7 +21,7 @@ class Memory{
       // Si la taille de la mémoire est trop petite, on double 
       if(SIZE >= CAPACITY){
         CAPACITY += CAPACITY;
-        double* nMemX = new double[CAPACITY], nMemY = new double[CAPACITY], nMemD = new double[CAPACITY];
+        double *nMemX = new double[CAPACITY], *nMemY = new double[CAPACITY], *nMemD = new double[CAPACITY];
         for(int i = 0; i < SIZE; i++){
           nMemX[i] = mem_x[i];
           nMemY[i] = mem_y[i];
@@ -39,7 +39,7 @@ class Memory{
     }
 
     // Est-ce qu'on a déjà visité ce point ?
-    boolean isVisited(double x, double y, double distance){
+    bool isVisited(double x, double y, double distance){
       for(int i = 0; i < SIZE; i++){
         // Si on a parcouru assez de distance depuis l'ajout du point
         if(distance - mem_d[i] > MINIMUM_DISTANCE){
@@ -66,7 +66,7 @@ class Memory{
     }
 
     // Est-ce que le circuit a déjà été fermé ? (=> on a fait le tour, isVisited => true)
-    boolean isClosed(){
+    bool isClosed(){
       return CLOSED;
     }
 
@@ -75,4 +75,4 @@ class Memory{
       return FOLLOWING_SIDE;
     }
     
-}
+};
