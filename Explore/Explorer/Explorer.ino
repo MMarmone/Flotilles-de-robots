@@ -1,6 +1,7 @@
 #include <Adafruit_MotorShield.h>
 #include <string.h>
 #include "Memory.cpp"
+#include "Pathfinding.cpp"
 #include<SoftwareSerial.h> //Included SoftwareSerial Library
 //Started SoftwareSerial at RX and TX pin of ESP8266/NodeMCU
 SoftwareSerial s(0,1);
