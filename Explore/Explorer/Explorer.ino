@@ -1,10 +1,15 @@
+#include <math.h>
 #include <Adafruit_MotorShield.h>
 #include <string.h>
 #include "Memory.cpp"
 #include<SoftwareSerial.h> //Included SoftwareSerial Library
 //Started SoftwareSerial at RX and TX pin of ESP8266/NodeMCU
+SoftwareSerial s(0,1);
 
-SoftwareSerial s(0,1);  // Carte WiFi
+#define FORWARD_ 0
+#define BACKWARD_ 2
+#define LEFT_ -1
+#define RIGHT_ 1
 
 /* Ultrasonic sensors */
 const uint8_t echoPin_RIGHT = 2;  // echo signal (receives)
@@ -20,6 +25,33 @@ const uint8_t trigPin_front_right = 7;
 const uint8_t trigPin_front_left = 9;
 const uint8_t trigPin_left = 11;
 const uint8_t trigPin_LEFT = 13;
+
+
+/* Measurements */
+const float safetyDistance = 30; // according with the speed. Expressed in 
+const float robotWidth = 20; // expressed in cm
+const float marge = safetyDistance / 3; // margin of movement. It should move between the marging and the safetyDistance
+
+
+/* LEDs
+   long side : pin
+   short side : ground
+   resistor : 100 Ohm
+*/
+const uint8_t ledPin_left = 15;
+const uint8_t ledPin_back = 16;
+const uint8_t ledPin_right = 17;
+
+
+/*
+   Determines where to move
+*/
+int objectDetected = 0; // the side where the object is detected
+boolean searchingObject = false;
+int tick = 0;
+int randomDir = FORWARD_;
+boolean stop_ = false;
+
 
 /* Movement */
 const int motorSpeed = 100; // from 0 (off) to 255 (max speed)
@@ -45,26 +77,32 @@ class Explorer {
     int SENSOR_NUMBER = 6;
     // Index of the positions
     int FAR_LEFT = 0, LEFT = 1, UP_LEFT = 2, UP_RIGHT = 3, RIGHT = 4, FAR_RIGHT = 5;
+    // Angles of orientation of the sensors
+    double angles[6] = { -90, -45, 20, -20, 45, 90};
     // Safety distance in mm
-    int SAFETY_DISTANCE = 60;
+    int SAFETY_DISTANCE = 150;
+
+    int DEGREE90 = 3;
+    int DEGREE120 = 4;
+    int ROTATION = 30;
+    int DISTANCE = 90;
 
     // Error margin when moving along an object (in mm)
-    int ERROR_MARGIN = 30;
+    int ERROR_MARGIN = 40;
     // Distance at which we will move along an object (in mm)
     int FOLLOW_DISTANCE = 90;
-   
-    // Offset when turning
-    double angleOffset = 0;
-    double distanceOffset = 0;
+    // Speed of the wheels
+    int DEFAULT_SPEED = 100;
 
     /*********************************
        DEPENDS ON THE ROBOT'S SPEED
      *********************************/
     // Tick needed per angle
     double TICK_PER_ANGLE;
-   
+    double ANGLE_PER_TICK;
     // Tick per mm 
     double TICK_PER_MM;
+    double MM_PER_TICK;
     /*********************************/
 
 
@@ -84,6 +122,7 @@ class Explorer {
 
     // Previous informations
     double* prev_distances;
+    boolean* prev_contact;
 
     // Which side do we follow ? (-1 is none)
     int FOLLOWING_SIDE = -1;
@@ -98,9 +137,13 @@ class Explorer {
       contact = new boolean[6];
 
       prev_distances = new double[6];
+      prev_contact = new boolean[6];
 
       this->TICK_PER_ANGLE = TICK_PER_ANGLE;
       this->TICK_PER_MM = TICK_PER_MM;
+
+      this->ANGLE_PER_TICK = 1 / TICK_PER_ANGLE;
+      this->MM_PER_TICK = 1 / TICK_PER_MM;
 
       // Starting position
       x = 0; y = 0;
@@ -108,6 +151,35 @@ class Explorer {
       total_distance = 0;
 
       FOLLOWING_SIDE = -1;
+    }
+
+    void setPos(int x, int y) {
+      this->x = x;
+      this->y = y;
+    }
+
+    void setAngle(int angle) {
+      this->angle = angle;
+    }
+
+    double getX() {
+      return x;
+    }
+
+    double getY() {
+      return y;
+    }
+
+    double getAngle() {
+      return angle;
+    }
+
+    double* getDistances() {
+      return distances;
+    }
+
+    void setDistances(double* distances) {
+      for (int i = 0; i < SENSOR_NUMBER; i++) this->distances[i] = distances[i];
     }
 
     /*
@@ -173,7 +245,10 @@ class Explorer {
     void updateDistance() {
 
       // Copy the previous informations
-      for (int i = 0; i < SENSOR_NUMBER; i++) prev_distances[i] = distances[i];
+      for (int i = 0; i < SENSOR_NUMBER; i++) {
+        prev_distances[i] = distances[i];
+        prev_contact[i] = contact[i];
+      }
 
       // Récupérer les informations des capteurs
       double cm_front_left = calculDistance(trigPin_front_left, echoPin_front_left);
@@ -217,19 +292,15 @@ class Explorer {
     void explore() {
       updateDistance();
 
-      // Si on ne suit rien, on cherche 
       if (FOLLOWING_SIDE == -1) find_();
-      // Sinon, si on a pas fini de faire le tour d'un objet, on continue de suivre 
       else if(!memory->isVisited(x, y, total_distance)) follow();
-      // Sinon on arrête de suivre 
       else {
          // On a fini de visiter, on se tourne et on continue l'exploration
-         for(int i = 0; i < 9; i++){
-            if(FOLLOWING_SIDE == FAR_RIGHT) left(10);
-            else right(10);
+         for(int i = 0; i < DEGREE90; i++){
+            if(FOLLOWING_SIDE == FAR_RIGHT) left(ROTATION);
+            else right(ROTATION);
          }
          FOLLOWING_SIDE = -1;
-         memory->eraseMemory();
       }
     }
 
@@ -240,29 +311,29 @@ class Explorer {
       // If we're alongside an object on our left or right
       if (distances[OLD_FOLLOWING_SIDE] <= FOLLOW_DISTANCE + ERROR_MARGIN) {
          FOLLOWING_SIDE = OLD_FOLLOWING_SIDE;
-         memory->setFollowingSide(FOLLOWING_SIDE);
+         memory = new Memory(FOLLOWING_SIDE);
       }
       else if (distances[FAR_LEFT] <= FOLLOW_DISTANCE + ERROR_MARGIN){
          FOLLOWING_SIDE = FAR_LEFT;
-         memory->setFollowingSide(FOLLOWING_SIDE);
+         memory = new Memory(FOLLOWING_SIDE);
       }
       else if (distances[FAR_RIGHT] <= FOLLOW_DISTANCE + ERROR_MARGIN) {
          FOLLOWING_SIDE = FAR_RIGHT;
-         memory->setFollowingSide(FOLLOWING_SIDE);
+         memory = new Memory(FOLLOWING_SIDE);
       }
       else {
         int cpt = 0;
         // Nothing ahead, go forward
-        if (!contact[UP_RIGHT] && !contact[UP_LEFT] && !contact[RIGHT] && !contact[LEFT]) forward(30);
+        if (!contact[UP_RIGHT] && !contact[UP_LEFT] && !contact[RIGHT] && !contact[LEFT]) forward(DISTANCE);
         // If there is something ahead, on the right, then we turn the robot to follow it
         else if (contact[UP_RIGHT] || contact[RIGHT]) {
-          while (!(distances[FAR_RIGHT] <= FOLLOW_DISTANCE + ERROR_MARGIN) && cpt++ < 9) {
-            left(10);
+          while (!(distances[FAR_RIGHT] <= FOLLOW_DISTANCE + ERROR_MARGIN) && cpt++ < DEGREE90) {
+            left(ROTATION);
             updateDistance();
           }
         } else if (contact[UP_LEFT] || contact[LEFT]) {
-          while (!(distances[FAR_LEFT] <= FOLLOW_DISTANCE + ERROR_MARGIN) && cpt++ < 9) {
-            right(10);
+          while (!(distances[FAR_LEFT] <= FOLLOW_DISTANCE + ERROR_MARGIN) && cpt++ < DEGREE90) {
+            right(ROTATION);
             updateDistance();
           }
         }
@@ -278,8 +349,8 @@ class Explorer {
        
       // On tourne de 20 degré quand y'a un truc devant
       if(contact[UP_RIGHT] || contact[UP_LEFT] || contact[RIGHT] || contact[LEFT]){
-        if(FOLLOWING_SIDE == FAR_RIGHT) left(10);
-        else right(10);
+        if(FOLLOWING_SIDE == FAR_RIGHT) left(ROTATION);
+        else right(ROTATION);
         updateDistance();
       }
 
@@ -287,25 +358,25 @@ class Explorer {
       if (isThereSomething(FOLLOWING_SIDE, FOLLOW_DISTANCE + ERROR_MARGIN + ERROR_MARGIN)) {
         // If we're too close, we try to turn a bit
         if (distances[FOLLOWING_SIDE] <= FOLLOW_DISTANCE - ERROR_MARGIN) {
-          if (FOLLOWING_SIDE == FAR_RIGHT && distances[FOLLOWING_SIDE] < prev_distances[FOLLOWING_SIDE]) left(10);
-          if (FOLLOWING_SIDE == FAR_LEFT && distances[FOLLOWING_SIDE] < prev_distances[FOLLOWING_SIDE]) right(10);
+          if (FOLLOWING_SIDE == FAR_RIGHT && distances[FOLLOWING_SIDE] < prev_distances[FOLLOWING_SIDE]) left(ROTATION);
+          if (FOLLOWING_SIDE == FAR_LEFT && distances[FOLLOWING_SIDE] < prev_distances[FOLLOWING_SIDE]) right(ROTATION);
           updateDistance();
         } else if (distances[FOLLOWING_SIDE] >= FOLLOW_DISTANCE + ERROR_MARGIN) {
-          if (FOLLOWING_SIDE == FAR_RIGHT && distances[FOLLOWING_SIDE] > prev_distances[FOLLOWING_SIDE]) right(10);
-          if (FOLLOWING_SIDE == FAR_LEFT && distances[FOLLOWING_SIDE] > prev_distances[FOLLOWING_SIDE]) left(10);
+          if (FOLLOWING_SIDE == FAR_RIGHT && distances[FOLLOWING_SIDE] > prev_distances[FOLLOWING_SIDE]) right(ROTATION);
+          if (FOLLOWING_SIDE == FAR_LEFT && distances[FOLLOWING_SIDE] > prev_distances[FOLLOWING_SIDE]) left(ROTATION);
           updateDistance();
         }
-        if (!contact[UP_RIGHT] && !contact[UP_LEFT] && !contact[LEFT] && !contact[RIGHT]) forward(30);
-        else backward(30);
+        if (!contact[UP_RIGHT] && !contact[UP_LEFT] && !contact[LEFT] && !contact[RIGHT]) forward(DISTANCE);
+        else backward(DISTANCE);
       }
       else {
         // If there is no more something at the side, we try to turn and go forward
         int cpt = 0;
-        while (!isThereSomething(FOLLOWING_SIDE, FOLLOW_DISTANCE + ERROR_MARGIN) && cpt < 12) {
+        while (!isThereSomething(FOLLOWING_SIDE, FOLLOW_DISTANCE + ERROR_MARGIN) && cpt < DEGREE120) {
           if(contact[UP_RIGHT] || contact[UP_LEFT] || contact[LEFT] || contact[RIGHT] || contact[FAR_RIGHT] || contact[FAR_LEFT]) break;
-          if (FOLLOWING_SIDE == FAR_RIGHT) right(10);
-          else if (FOLLOWING_SIDE == FAR_LEFT) left(10);
-          forward(30);
+          if (FOLLOWING_SIDE == FAR_RIGHT) right(ROTATION);
+          else if (FOLLOWING_SIDE == FAR_LEFT) left(ROTATION);
+          forward(DISTANCE);
           updateDistance();
           cpt++;
         }
@@ -360,17 +431,21 @@ class Explorer {
       delay(500);
       //for (int i = 0; i < 100; i++) {}
     }
-   
-    //Update the position of the robot given the distance travelled
-   void updatePos(double distance, double a){
+    /**
+       Update the position of the robot given the distance travelled
+       @param distance
+    */
+    void updatePos(double distance) {
       total_distance += distance;
-      double angle = 3.141592654 * (this->angle + a) / 180;
+      double angle = 3.141592654 * this->angle / 180;
       x += cos(angle) * distance;
       y += sin(angle) * distance;
-   }
-   
-    void updatePos(double distance) {
-      updatePos(distance, 0);
+    }
+
+    void updatePos(double distance, double angle){
+      angle = 3.141592654 * angle / 180;
+      x += cos(angle) * distance;
+      y += sin(angle) * distance;
     }
 
     /**
@@ -429,9 +504,7 @@ class Explorer {
       this->angle += angle;
       if (this->angle >= 360) this->angle -= 360;
       if (this->angle < 0) this->angle += 360;
-       
-      // Offset
-      updatePos(distanceOffset, angleOffset);
+      updatePos(1, 35);
     }
 
     //traduit x,y,angle,distances en JSON
@@ -463,12 +536,13 @@ class Explorer {
 };
 
 Explorer* robot;
+boolean test;
 
 void setup() {
   Serial.begin(115200);
   AFMS.begin();
 
-  robot = new Explorer(1.80, 0.62);
+  robot = new Explorer(1.89, 0.57);
 
 // Left wheels
   robot->speedLeft(motorSpeed*1.1);
@@ -478,14 +552,8 @@ void setup() {
 
   robot->stopmamene();
 
-  delay(1000); //on attends 5 sec la connexion au serveur
-  //robot->left(90);
-  /*int i;
-  for(i=0;i < 10; i++){
-    //robot->left(10);
-    robot->forward(30);
-  }
-  //robot->forward(10);*/
+  delay(5000); //on attends 5 sec la connexion au serveur
+
 }
 
 void loop() {
@@ -493,5 +561,5 @@ void loop() {
   /*Serial.print("Reading data...");
   String data = Serial.readStringUntil(';');
   Serial.println("Data: " + data);*/
-  
+  //robot->forward();
 }

@@ -1,7 +1,7 @@
 class Memory{
   private:
     int CAPACITY = 10;
-    double RADIUS = 25; // (in mm)
+    double RADIUS = 40; // (in mm)
     double MINIMUM_DISTANCE = 100; // (in mm)
     double *mem_x, *mem_y, *mem_d;
     bool CLOSED = false;
@@ -18,8 +18,19 @@ class Memory{
 
     // Ajoute un point à la mémoire
     void addMemoryPoint(double x, double y, double distance){
-      // Si on a plus assez de place, on ajoute rien
-      if(SIZE >= CAPACITY) return;
+      // Si la taille de la mémoire est trop petite, on double 
+      if(SIZE >= CAPACITY){
+        CAPACITY += CAPACITY;
+        double *nMemX = new double[CAPACITY], *nMemY = new double[CAPACITY], *nMemD = new double[CAPACITY];
+        for(int i = 0; i < SIZE; i++){
+          nMemX[i] = mem_x[i];
+          nMemY[i] = mem_y[i];
+          nMemD[i] = mem_d[i];
+        }
+        mem_x = nMemX;
+        mem_y = nMemY;
+        mem_d = nMemD;
+      }
 
       // On ajoute le point
       mem_x[SIZE] = x;
@@ -41,14 +52,7 @@ class Memory{
       }
       return false;
     }
-  
-    void eraseMemory(){
-      SIZE = 0;
-    }
 
-    void setFollowingSide(int side){
-      FOLLOWING_SIDE = side;
-    }
 
     // Distance à laquelle a été ajoutée le dernier point
     double getLastDistance(){

@@ -27,8 +27,8 @@ public class MapGraphic extends JPanel {
     };
 
     // Size of a pixel in the map
-    private final int PIXEL_SIZE = 3;
-    private final int HALF_PIXEL = 1;
+    private final int PIXEL_SIZE = 6;
+    private final int HALF_PIXEL = 3;
     private final int PADDING = 4;
 
     private double RATIO = 1;
@@ -103,14 +103,6 @@ public class MapGraphic extends JPanel {
             for (Node node : nodes) {
                 int x = (int) (node.getxIndex() * RATIO) + PADDING;
                 int y = (int) (node.getyIndex() * RATIO) + PADDING;
-                // Change the color of the point depending on the sensor
-                if(node.getFromSensor() >= 0 && node.getFromSensor() < sensorColors.length) g.setColor(sensorColors[node.getFromSensor()]);
-                // Draw the point
-                g.fillRect(x-HALF_PIXEL, y-HALF_PIXEL, PIXEL_SIZE, PIXEL_SIZE);
-
-                // Add a thin black border to the point
-                g.setColor(color);
-                g.drawRect(x-HALF_PIXEL, y-HALF_PIXEL, PIXEL_SIZE, PIXEL_SIZE);
 
                 // Draw the link between nodes
                 if (drawLink) {
@@ -121,6 +113,16 @@ public class MapGraphic extends JPanel {
                         g.drawLine(x, y, x2, y2);
                     }
                 }
+
+                // Change the color of the point depending on the sensor
+                if(node.getFromSensor() >= 0 && node.getFromSensor() < sensorColors.length) g.setColor(sensorColors[node.getFromSensor()]);
+                else g.setColor(Color.WHITE);
+                // Draw the point
+                g.fillRect(x-HALF_PIXEL, y-HALF_PIXEL, PIXEL_SIZE, PIXEL_SIZE);
+
+                // Add a thin black border to the point
+                g.setColor(color);
+                g.drawRect(x-HALF_PIXEL, y-HALF_PIXEL, PIXEL_SIZE, PIXEL_SIZE);
             }
         }
     }
